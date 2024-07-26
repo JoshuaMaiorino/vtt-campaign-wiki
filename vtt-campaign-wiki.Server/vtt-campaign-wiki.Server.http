@@ -1,0 +1,6 @@
+@vtt_campaign_wiki.Server_HostAddress = http://localhost:5133
+
+GET {{vtt_campaign_wiki.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
