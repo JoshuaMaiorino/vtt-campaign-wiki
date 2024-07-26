@@ -1,4 +1,6 @@
-﻿namespace vtt_campaign_wiki.Server.Features.Shared
+﻿using vtt_campaign_wiki.Server.Features.Image;
+
+namespace vtt_campaign_wiki.Server.Features.Shared
 {
     public class ItemBaseDto
     {

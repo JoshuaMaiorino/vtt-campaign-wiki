@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <Folder Include="Features\Campaign\Services\" />
+    <Folder Include="Features\Shared\Extensions\" />
   </ItemGroup>
 
 </Project>

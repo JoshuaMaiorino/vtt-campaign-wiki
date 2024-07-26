@@ -10,7 +10,12 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "vue": "^3.4.29"
+    "@fortawesome/fontawesome-free": "^6.6.0",
+    "@mdi/font": "^7.4.47",
+    "pinia": "^2.2.0",
+    "vue": "^3.4.29",
+    "vue-router": "^4.0.13",
+    "vuetify": "^3.6.13-3.7.0-beta.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",

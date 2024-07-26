@@ -1,5 +1,9 @@
 ﻿using Mapster;
 using vtt_campaign_wiki.Server.Features.Shared.Services;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Mvc;
+using vtt_campaign_wiki.Server.Features.Image;
 
 namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints
 {
@@ -24,25 +28,23 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints
                 return Results.Ok( campaign.Adapt<CampaignDto>() );
             } ).RequireAuthorization();
 
-            endpoints.MapPost( "/campaigns", async ( CampaignDto campaign, IRepositoryBase<CampaignEntity> campaignRepository ) =>
+            endpoints.MapPost( "/campaigns", async ( HttpRequest request, [FromForm] CampaignDto campaign, [FromForm] IFormFile image, IRepositoryBase<CampaignEntity> campaignRepository ) =>
             {
-
+                var campaignImage = await GetImageFromRequest( image );
                 await campaignRepository.AddAsync( campaign.Adapt<CampaignEntity>() );
-
                 return Results.Created( $"/campaigns/{campaign.Id}", campaign );
             } ).RequireAuthorization();
 
-            endpoints.MapPut( "/campaigns/{id}", async ( int id, CampaignDto campaign, IRepositoryBase<CampaignEntity> campaignRepository ) =>
+            endpoints.MapPut( "/campaigns/{id}", async ( int id, HttpRequest request, [FromForm] CampaignDto campaign, [FromForm] IFormFile image, IRepositoryBase<CampaignEntity> campaignRepository ) =>
             {
-
-                if( id != campaign.Id)
+                if (id != campaign.Id)
                 {
                     return Results.BadRequest();
                 }
 
+                var campaignImage = await GetImageFromRequest( image );
                 await campaignRepository.UpdateAsync( campaign.Adapt<CampaignEntity>() );
                 return Results.NoContent();
-
             } ).RequireAuthorization();
 
             endpoints.MapDelete( "/campaigns/{id}", async ( int id, IRepositoryBase<CampaignEntity> campaignRepository ) =>
@@ -55,8 +57,25 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints
 
                 await campaignRepository.DeleteAsync( id );
                 return Results.NoContent();
-
             } ).RequireAuthorization();
+        }
+
+        private static async Task<ItemImageDto> GetImageFromRequest( IFormFile image )
+        {
+            if (image != null)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await image.CopyToAsync( memoryStream );
+                    return new ItemImageDto
+                    {
+                        Name = image.FileName,
+                        ContentType = image.ContentType,
+                        Data = memoryStream.ToArray()
+                    };
+                }
+            }
+            return null;
         }
     }
 }

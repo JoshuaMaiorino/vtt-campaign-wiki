@@ -1,6 +1,15 @@
-import './assets/main.css'
-
 import { createApp } from 'vue'
 import App from './App.vue'
+import vuetify from './plugins/vuetify'
+import router from './router'
 
-createApp(App).mount('#app')
+import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css'
+import '@fortawesome/fontawesome-free/css/all.css'
+
+const app = createApp(App)
+
+app.use(vuetify)
+app.use(router)
+
+app.mount('#app')
