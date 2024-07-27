@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col v-for="campaign in campaigns" :key="campaign.id" cols="6">
-                <ItemCard :item="campaign" @selected="editItem"/>
+                <ItemCard :item="campaign" @selected="editItem" @click="$router.push(`/campaigns/${campaign.id}`)"/>
             </v-col>
         </v-row>
 
@@ -16,33 +16,18 @@
            color="secondary"
            offset
            @click="addNew"></v-fab>
-    <ItemEdit :title="formTitle" v-model="editDialog" v-model:item="selectedCampaign" @save="save" @close="close" />
+    <ItemEdit :title="formTitle" v-model="editDialog" v-model:item="selectedCampaign" @save="save" @close="close"/>
 </template>
 
 <script setup>
-    import { ref, nextTick, computed } from 'vue'
+    import { ref, nextTick, computed, onMounted } from 'vue'
+    import axios from '@/utils/axios';
+    import { toFormData } from '@/utils/formData';
 
     import ItemCard from '@/components/ItemCard.vue'
     import ItemEdit from '@/components/ItemEdit.vue'
 
-    const campaigns = ref([
-        {
-            id: 1,
-            title: "Here's my Campaign",
-            content: "<p>Here's some details</p><li>Here's a buttet Item</li><li>Here's another</li>",
-            externalLink: "",
-            imageId: 1,
-            AuthorId: 1
-        },
-        {
-            id: 2,
-            title: "Here's Another Campaign",
-            content: "<p>Here's other details</p>",
-            externalLink: "",
-            imageId:null,
-            AuthorId: 1
-        },
-    ])
+    const campaigns = ref([]);
 
     // Edit Campaign Data & Methods
     const formTitle = computed(() => editIndex.value === -1 ? 'New Campaign' : 'Edit Campaign' )
@@ -53,7 +38,8 @@
         content: '',
         externalLink: '',
         imageId: null,
-        authorId: null
+        authorId: null,
+        image: null
     }
 
     const selectedCampaign = ref({
@@ -62,8 +48,22 @@
         content: '',
         externalLink: '',
         imageId: null,
-        authorId: null
+        authorId: null,
+        image: null
     })
+
+    const fetchCampaigns = async () => {
+        try {
+            const response = await axios.get('/campaigns');
+            campaigns.value = response.data;
+        } catch (error) {
+            console.error('Failed to fetch campaigns', error);
+        }
+    };
+
+    onMounted(() => {
+        fetchCampaigns();
+    });
 
     const editDialog = ref(false)
     const editIndex = ref(-1)
@@ -78,14 +78,32 @@
         selectedCampaign.value = Object.assign({}, item)
         editDialog.value = true
     }
-    const save = () => {
-        if (editIndex.value > -1 ) {
-            Object.assign(campaigns.value[ editIndex.value ], selectedCampaign.value)
-        } else {
-            campaigns.value.push( selectedCampaign.value )
-        }
-        close()
+    const save = async () => {
+
+        let formData = toFormData(selectedCampaign.value)
+
+        try {
+            if (editIndex.value > -1) {
+                await axios.put(`/campaigns/${selectedCampaign.value.id}`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                Object.assign(campaigns.value[ editIndex.value ], selectedCampaign.value);
+            } else {
+                const response = await axios.post('/campaigns', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                campaigns.value.push(response.data);
+            }
+            close();
+        } catch (error) {
+            console.error('Failed to save campaign', error);
+        } 
     }
+
     const close = () => {
         editDialog.value = false
         nextTick(() => {

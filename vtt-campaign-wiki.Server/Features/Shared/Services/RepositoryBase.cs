@@ -55,7 +55,9 @@ namespace vtt_campaign_wiki.Server.Features.Shared.Services
             {
                 return;
             }
-            
+
+            _dbSet.Entry( exisitingEntity ).CurrentValues.SetValues( entity );
+
             if (entity is ItemBaseEntity entityBase)
             {
                 var currentPlayer = PlayerProvider.GetCurrentPlayer();
@@ -63,9 +65,12 @@ namespace vtt_campaign_wiki.Server.Features.Shared.Services
                 {
                     throw new UnauthorizedAccessException( "Only the author can update this entity." );
                 }
-            }
 
-            _dbSet.Entry( exisitingEntity ).CurrentValues.SetValues( entity );
+                if (exisitingEntity is ItemBaseEntity existingEntityBase)
+                {
+                     existingEntityBase.Image = entityBase.Image;
+                }
+            }
             
             await _context.SaveChangesAsync();
         }

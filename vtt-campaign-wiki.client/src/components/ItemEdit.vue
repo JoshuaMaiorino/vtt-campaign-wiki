@@ -10,14 +10,18 @@
             <v-card-text>
 
                 <v-text-field v-model="item.title"
-                                label="Name"></v-text-field>
+                              label="Name"></v-text-field>
 
                 <v-textarea v-model="item.content"
-                                label="Content"></v-textarea>
-                       
+                            label="Content"></v-textarea>
+
                 <v-text-field v-model="item.externalLink"
-                                label="External Link" 
-                                pre-pendicon-inner="mdi-link"></v-text-field>
+                              label="External Link"
+                              pre-pendicon-inner="mdi-link"></v-text-field>
+
+                <v-file-input v-model="item.image" 
+                              label="Upload Image" 
+                              accept="image/*"></v-file-input>
 
             </v-card-text>
 
@@ -41,7 +45,9 @@
 <script setup>
     const item = defineModel('item')
     const dialog = defineModel('model')
-    const props = defineProps(['title'])
+    const props = defineProps([ 'title' ])
+
+    const emit = defineEmits(['save','close'])
 </script>
 
 <style>

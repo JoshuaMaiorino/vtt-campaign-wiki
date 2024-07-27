@@ -1,33 +1,47 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FastEndpoints;
+using Microsoft.AspNetCore.Identity;
 
 namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.Register
 {
-    public static class RegisterEndpoint
+    public class RegisterEndpoint : Endpoint<RegisterRequest, RegisterResponse>
     {
-        public static void MapRegisterEndpoints( this IEndpointRouteBuilder endpoints )
+        private readonly UserManager<PlayerEntity> _userManager;
+
+        public RegisterEndpoint( UserManager<PlayerEntity> userManager )
         {
-            endpoints.MapPost( "/register", async ( RegisterRequest registerRequest, UserManager<PlayerEntity> userManager ) =>
+            _userManager = userManager;
+        }
+
+        public override void Configure()
+        {
+            Post( "/register" );
+            AllowAnonymous();
+        }
+
+        public override async Task HandleAsync( RegisterRequest req, CancellationToken ct )
+        {
+            var user = new PlayerEntity
             {
-                var user = new PlayerEntity
-                {
-                    UserName = registerRequest.Username,
-                    Email = registerRequest.Email,
-                    FirstName = registerRequest.FirstName,
-                    LastName = registerRequest.LastName
-                };
+                UserName = req.Username,
+                Email = req.Email,
+                FirstName = req.FirstName,
+                LastName = req.LastName
+            };
 
-                var result = await userManager.CreateAsync( user, registerRequest.Password );
+            var result = await _userManager.CreateAsync( user, req.Password );
 
-                if (result.Succeeded)
+            if (result.Succeeded)
+            {
+                await SendOkAsync( new RegisterResponse { Message = "User registered successfully" }, ct );
+            }
+            else
+            {
+                foreach( var error in result.Errors)
                 {
-                    return Results.Ok( new { Message = "User registered successfully" } );
+                    AddError( error.Description );
                 }
-                else
-                {
-                    return Results.BadRequest( result.Errors );
-                }
-            } ).Produces<IResult>( StatusCodes.Status200OK )
-              .Produces<IResult>( StatusCodes.Status400BadRequest );
+                await SendErrorsAsync( 400, ct );
+            }
         }
     }
 }

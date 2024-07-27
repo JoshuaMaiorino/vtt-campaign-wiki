@@ -11,6 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\Shared\Extensions\**" />
+    <Content Remove="Features\Shared\Extensions\**" />
+    <EmbeddedResource Remove="Features\Shared\Extensions\**" />
+    <None Remove="Features\Shared\Extensions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FastEndpoints" Version="5.27.0" />
+    <PackageReference Include="FastEndpoints.Swagger" Version="5.27.0" />
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
@@ -35,11 +44,6 @@
     <ProjectReference Include="..\vtt-campaign-wiki.client\vtt-campaign-wiki.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\Campaign\Services\" />
-    <Folder Include="Features\Shared\Extensions\" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FastEndpoints;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -6,40 +7,54 @@ using System.Text;
 
 namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.Login
 {
-    public static class LoginEndpoint
+    public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
     {
-        public static void MapLoginEndpoints( this IEndpointRouteBuilder endpoints )
+        private readonly UserManager<PlayerEntity> _userManager;
+        private readonly SignInManager<PlayerEntity> _signInManager;
+        private readonly IConfiguration _configuration;
+
+        public LoginEndpoint( UserManager<PlayerEntity> userManager, SignInManager<PlayerEntity> signInManager, IConfiguration configuration )
         {
-            endpoints.MapPost( "/login", async ( LoginRequest loginRequest, UserManager<PlayerEntity> userManager, SignInManager<PlayerEntity> signInManager, IConfiguration configuration ) =>
-            {
-                var user = await userManager.FindByNameAsync( loginRequest.Username );
-                if (user == null)
-                {
-                    return Results.NotFound( new { Message = "User not found" } );
-                }
-
-                var result = await signInManager.PasswordSignInAsync( user, loginRequest.Password, isPersistent: false, lockoutOnFailure: false );
-
-                if (result.Succeeded)
-                {
-                    var token = GenerateJwtToken( user, configuration );
-                    return Results.Ok( new { Message = "Login successful", Token = token } );
-                }
-                else if (result.IsLockedOut)
-                {
-                    return Results.Json( new { Message = "User account locked" }, statusCode: StatusCodes.Status423Locked );
-                }
-                else
-                {
-                    return Results.Json( new { Message = "Invalid login attempt" }, statusCode: StatusCodes.Status401Unauthorized );
-                }
-            } ).Produces<IResult>( StatusCodes.Status200OK )
-              .Produces<IResult>( StatusCodes.Status404NotFound )
-              .Produces<IResult>( StatusCodes.Status401Unauthorized )
-              .Produces<IResult>( StatusCodes.Status423Locked );
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _configuration = configuration;
         }
 
-        private static string GenerateJwtToken( PlayerEntity user, IConfiguration configuration )
+        public override void Configure()
+        {
+            Post( "/login" );
+            AllowAnonymous();
+        }
+
+        public override async Task HandleAsync( LoginRequest req, CancellationToken ct )
+        {
+            var user = await _userManager.FindByNameAsync( req.Username );
+            if (user == null)
+            {
+                await SendNotFoundAsync( ct );
+                return;
+            }
+
+            var result = await _signInManager.PasswordSignInAsync( user, req.Password, isPersistent: false, lockoutOnFailure: false );
+
+            if (result.Succeeded)
+            {
+                var token = GenerateJwtToken( user );
+                await SendOkAsync( new LoginResponse { Message = "Login successful", Token = token, UserName = user.UserName }, ct );
+            }
+            else if (result.IsLockedOut)
+            {
+                AddError( "User account locked" );
+                await SendErrorsAsync( StatusCodes.Status423Locked, ct );
+            }
+            else
+            {
+                AddError( "Invalid login attempt" );
+                await SendErrorsAsync( 401, ct );
+            }
+        }
+
+        private string GenerateJwtToken( PlayerEntity user )
         {
             var claims = new[]
             {
@@ -49,12 +64,12 @@ namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.Login
                 new Claim(ClaimTypes.Name, user.UserName)
             };
 
-            var key = new SymmetricSecurityKey( Encoding.UTF8.GetBytes( configuration["Jwt:Key"] ) );
+            var key = new SymmetricSecurityKey( Encoding.UTF8.GetBytes( _configuration["Jwt:Key"] ) );
             var creds = new SigningCredentials( key, SecurityAlgorithms.HmacSha256 );
 
             var token = new JwtSecurityToken(
-                issuer: configuration["Jwt:Issuer"],
-                audience: configuration["Jwt:Audience"],
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.Now.AddMinutes( 30 ),
                 signingCredentials: creds );
