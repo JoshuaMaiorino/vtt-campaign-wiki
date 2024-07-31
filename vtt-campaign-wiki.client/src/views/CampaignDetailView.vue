@@ -1,7 +1,7 @@
 <template>
     <div class="campaign-detail-view">
         <div class="hero-section">
-            <v-img :src="`https://localhost:7128/image/${campaign.imageId}`" cover max-height="320">
+            <v-parallax :src="`https://localhost:7128/image/${campaign.imageId}`" cover max-height="320">
                 <v-container class="fill-height" fluid>
                     <v-row class="fill-height">
                         <v-col class="d-flex align-center justify-center">
@@ -9,7 +9,7 @@
                         </v-col>
                     </v-row>
                 </v-container>
-            </v-img>
+            </v-parallax>
         </div>
 
         <v-sheet v-if="campaign.content" color="surface-variant" class="d-flex align-center justify-center pa-12">
@@ -47,7 +47,7 @@
     import CampaignItemTree from '@/components/CampaignItemTree.vue';
 
     const campaignStore = useCampaignStore();
-    const campaign = campaignStore.getSelectedCampaign;
+    const campaign = campaignStore.selectedCampaign;
 
     const authStore = useAuthStore();
     const userId = authStore.userId;
@@ -57,30 +57,34 @@
 </script>
 
 <style scoped>
-.campaign-detail-view {
-  margin-bottom: 2rem;
-}
+    .campaign-detail-view {
+      margin-bottom: 2rem;
+    }
 
-.hero-section {
-  position: relative;
-}
+    .hero-section {
+      position: relative;
+    }
 
-.hero-image {
-  height: 300px;
-  object-fit: cover;
-}
+    .hero-image {
+      height: 300px;
+      object-fit: cover;
+    }
 
-.hero-title {
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-}
+    .hero-title {
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
 
-.campaign-item-card {
-  margin: 1rem 0;
-}
+    .campaign-item-card {
+      margin: 1rem 0;
+    }
 
-.campaign-item-image {
-  height: 150px;
-  object-fit: cover;
-}
+    .campaign-item-image {
+      height: 150px;
+      object-fit: cover;
+    }
+
+    .v-container {
+        max-width: 1280px;
+    }
 </style>

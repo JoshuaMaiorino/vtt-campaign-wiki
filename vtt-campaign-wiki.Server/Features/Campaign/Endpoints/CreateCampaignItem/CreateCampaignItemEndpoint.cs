@@ -1,4 +1,5 @@
 ﻿using vtt_campaign_wiki.Server.Features.Campaign.Services;
+using vtt_campaign_wiki.Server.Features.Image.Services;
 
 namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.CreateCampaignItem
 {
@@ -23,6 +24,8 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.CreateCampaignIte
 
             var campaignItem = req.Adapt<CampaignItemEntity>();
             campaignItem.CampaignId = campaignId;
+
+            campaignItem.Image = await ImageHelper.GetImageFromRequest( req.Image );
 
             if ( req.ParentEntityId == 0)
             {

@@ -1,7 +1,7 @@
 <template>
     <div class="campaign-detail-view">
         <div class="hero-section">
-            <v-img :src="`https://localhost:7128/image/${campaignItem?.imageId}`" cover max-height="320" color="surface-variant">
+            <v-parallax :src="`https://localhost:7128/image/${campaignItem?.imageId}`" cover max-height="320" color="surface-variant">
                 <v-container class="fill-height" fluid>
                     <v-row class="fill-height">
                         <v-col class="d-flex align-center justify-center">
@@ -9,7 +9,7 @@
                         </v-col>
                     </v-row>
                 </v-container>
-            </v-img>
+            </v-parallax>
         </div>
 
         <v-sheet v-if="campaignItem?.content" color="surface-variant" class="d-flex align-center justify-center pa-12">

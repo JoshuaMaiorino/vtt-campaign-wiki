@@ -57,7 +57,7 @@
 
     }
 
-    const formTitle = computed(() => !selectedStat.value ? 'New Item' : 'Edit Item');
+    const formTitle = computed(() => selectedCampaignItem.value.id === -1 ? 'New Item' : 'Edit Item');
 
     const defaultCampaignItem = {
         id: -1,
@@ -78,7 +78,8 @@
 
     const addNew = (parentStat) => {
         selectedCampaignItem.value = { ...defaultCampaignItem };
-        if( parentStat.value )
+        console.log("parentStat", parentStat)
+        if (parentStat)
         {
             selectedCampaignItem.value.parentEntityId = parentStat.data.id
             selectedStat.value = parentStat
@@ -96,8 +97,10 @@
     const save = async () => {
         let formData = toFormData(selectedCampaignItem.value);
 
+        console.log( "Selected Campaign Item Id:", selectedCampaignItem.value )
+
         try {
-            if (selectedStat.value) {
+            if (selectedCampaignItem.value.id !== -1) {
                 const response = await axios.put(`/campaigns/${campaign.id}/items/${selectedCampaignItem.value.id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
@@ -114,11 +117,18 @@
                         'Content-Type': 'multipart/form-data',
                     },
                 });
+
+                console.log("SelectedStat", selectedStat, "SelectedItem", selectedCampaignItem.value)
+
                 // Add new item to the local items array
-                if (selectedStat.value) {
-                    selectedStat.value.data.children.push(response.data);
+                if (selectedStat) {
+                    addItem(items.value, selectedCampaignItem.value.parentEntityId, (item) => {
+                        item.children.push(response.data);
+                    })
+                    tree.value.add(response.data, selectedStat.value)
                 } else {
                     items.value.push(response.data);
+                    tree.value.add(response.data)
                 }
             }
             close();
@@ -184,18 +194,33 @@
     }
 
     const updateItemById = (array, id, updateFn) => {
-    for (const item of array) {
-        if (item.id === id) {
-            updateFn(item);
-            return true;
-        }
-        if (item.children && item.children.length > 0) {
-            if (updateItemById(item.children, id, updateFn)) {
+        for (const item of array) {
+            if (item.id === id) {
+                updateFn(item);
                 return true;
             }
+            if (item.children && item.children.length > 0) {
+                if (updateItemById(item.children, id, updateFn)) {
+                    return true;
+                }
+            }
         }
+        return false;
+    };
+
+    const addItem = (array, parentId, updateFn) => {
+        for (const item of array) {
+            if (item.parentEntityId === parentId) {
+                updateFn(item);
+                return true;
+            }
+            if (item.children && item.children.length > 0) {
+                if (addItem(item.children, parentId, updateFn)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
-    return false;
-};
 
 </script>

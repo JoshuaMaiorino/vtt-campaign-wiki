@@ -5,26 +5,25 @@
                :src="`https://localhost:7128/image/${item.imageId}`"
                cover />
         <v-toolbar color="transparent" :title="item?.title">
-            <template v-if="item.authorId === authStore.userId" v-slot="append">
-                <v-btn size="small" icon="mdi-dots-horizontal" @click.stop="$emit('selected',item)" />
-            </template>
         </v-toolbar>
         <v-card-text>
-            <div v-html="item?.content"></div>
+            <ParsedContent v-if="item?.content" :content="item.content" :itemId="item.id" :campaignItems="campaign?.items" />
         </v-card-text>
     </v-card>
 </template>
 
 <script setup>
+
+    import ParsedContent from '@/components/ParseContentV2.vue'
+    import { useCampaignStore } from '@/stores/campaign.js'
+
     const props = defineProps({
         item: Object
     })
 
-    const emit = defineEmits([ 'selected' ])
+    const campaignStore = useCampaignStore()
 
-    import { useAuthStore } from '@/stores/auth.js'
-
-    const authStore = useAuthStore();
+    const campaign = campaignStore.selectedCampaign
 
 </script>
 

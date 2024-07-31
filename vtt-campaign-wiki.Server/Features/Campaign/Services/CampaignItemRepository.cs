@@ -20,11 +20,11 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
 
             if (entity.Position == 0)
             {
-                decimal maxPosition = await _dbSet
+                double maxPosition = await _dbSet
                     .Where( e => e.ParentEntityId == entity.ParentEntityId )
-                    .MaxAsync( e => (decimal?) e.Position ) ?? 0m;
+                    .MaxAsync( e => (double?) e.Position ) ?? 0;
 
-                entity.Position = maxPosition + Shared.Constants.ItemBase.POSITION_GAP;
+                entity.Position = (decimal)maxPosition + Shared.Constants.ItemBase.POSITION_GAP;
             }
 
             await base.AddAsync( entity );
@@ -80,10 +80,9 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
                 .Include( x => x.Children )
                 .FirstOrDefaultAsync( i => i.Id == id );
 
-            root.Children.OrderBy( c => (double) c.Position );
-
             if (root != null)
             {
+                root.Children.OrderBy( c => (double) c.Position );
                 await LoadChildrenRecursively( root );
             }
 

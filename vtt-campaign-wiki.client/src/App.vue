@@ -29,8 +29,9 @@
                     scroll-behavior="elevate"
                     floating
                     >
-            <v-toolbar-title class="cursor-pointer" 
-                             @click="navigateHome">{{ campaignStore.selectedCampaign?.title ?? 'Campaign Wikis' }}
+            <v-toolbar-title class="cursor-pointer"
+                             @click="navigateHome">
+                {{ `${campaignStore.selectedCampaign?.title} Campaign Wiki` ?? 'Campaign Wikis' }}
             </v-toolbar-title>
             <template v-if="campaignStore.selectedCampaign">
                 <v-spacer></v-spacer>

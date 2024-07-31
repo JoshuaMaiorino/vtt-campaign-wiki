@@ -17,7 +17,7 @@
 
         <v-container v-if="hasChildren">
             <v-row>
-                <v-col v-for="child in item?.children" :key="child.id" :cols="level < 2 ? 4 : 12">
+                <v-col v-for="child in item?.children" :key="child.id" :cols="level === 0 ? 4 : 12">
                     <ItemContent :item="child" @selected="child" :level="level + 1" />
                 </v-col>
             </v-row>
@@ -52,9 +52,9 @@
                     </v-avatar>
                 </template>
                 <v-list-item-title>{{ item?.title }}</v-list-item-title>
-                <v-list-item-subtitle v-if="item.content">
+                <template v-if="item.content">
                     <ParsedContent v-if="item?.content" :content="item.content" :itemId="item.id" :campaignItems="campaign?.items" />
-                </v-list-item-subtitle>
+                </template>
             </v-list-item>
         </v-list>
     </template>
@@ -85,6 +85,8 @@
 
     const hasImage = computed(() => props.item.imageId && props.item.imageId !== 0)
     const hasChildren = computed(() => props.item.children && props.item.children.length)
+    const hasGrandChildren = computed(() => 
+        props.item.children && props.item.children.some(child => child.children && children.length ))
     const hasChildrenWithImages = computed(() =>
         props.item.children && props.item.children.some(child => child.imageId && child.imageId !== 0)
     )
