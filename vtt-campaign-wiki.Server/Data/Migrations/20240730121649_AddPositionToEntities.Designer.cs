@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using vtt_campaign_wiki.Server.Data;
 
@@ -10,9 +11,11 @@ using vtt_campaign_wiki.Server.Data;
 namespace vtt_campaign_wiki.Server.Data.Migrations
 {
     [DbContext(typeof(VttCampaignWikiDbContext))]
-    partial class VttCampaignWikiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240730121649_AddPositionToEntities")]
+    partial class AddPositionToEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");

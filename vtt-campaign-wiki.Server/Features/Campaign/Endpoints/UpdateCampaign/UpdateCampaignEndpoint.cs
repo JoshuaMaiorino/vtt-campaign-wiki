@@ -3,7 +3,7 @@ using vtt_campaign_wiki.Server.Features.Image.Services;
 
 namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaign
 {
-    public class UpdateCampaignEndpoint : Endpoint<UpdateCampaignRequest, EmptyResponse>
+    public class UpdateCampaignEndpoint : Endpoint<UpdateCampaignRequest, CampaignDto>
     {
         private readonly IRepositoryBase<CampaignEntity> _campaignRepository;
 
@@ -33,7 +33,17 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaign
             campaignEntity.Image = await ImageHelper.GetImageFromRequest( req.Image );
 
             await _campaignRepository.UpdateAsync( campaignEntity );
-            await SendNoContentAsync( ct );
+
+            // Re-fetch the item to get the updated ImageId
+            var updatedItemFromDb = await _campaignRepository.GetByIdAsync( campaignEntity.Id );
+            if (updatedItemFromDb == null)
+            {
+                AddError( "Item not found after update" );
+                await SendErrorsAsync( 404, ct );
+                return;
+            }
+
+            await SendOkAsync( updatedItemFromDb.Adapt<CampaignDto>(), ct );
         }
     }
 }

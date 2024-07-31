@@ -13,6 +13,7 @@ using vtt_campaign_wiki.Server.Features.Shared.Services;
 using vtt_campaign_wiki.Server.Lib;
 using System.Security.Claims;
 using vtt_campaign_wiki.Server.Features.Campaign.Services;
+using vtt_campaign_wiki.Server.Features.Campaign;
 
 var builder = WebApplication.CreateBuilder( args );
 

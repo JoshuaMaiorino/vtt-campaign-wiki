@@ -7,6 +7,8 @@ import * as directives from 'vuetify/directives'
 
 
 const vuetify = createVuetify({
+    components,
+    directives,
     icons: {
         defaultSet: 'mdi',
         aliases,
@@ -15,8 +17,17 @@ const vuetify = createVuetify({
             fa,
         },
     },
-    components,
-    directives
+    theme: {
+        defaultTheme: 'light',
+        themes: {
+            light: {
+                dark: false,
+                colors: {
+                    primary: '#C5000'
+                }
+            }
+        }
+    }
 })
 
 export default vuetify

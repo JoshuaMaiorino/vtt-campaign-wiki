@@ -22,7 +22,10 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.CampaignItemList
             
             var campaignItems = await _repository.GetAllAsync( campaignId );
 
-            var result = campaignItems.ToList().Adapt<List<CampaignItemDto>>();
+            var result = campaignItems
+                .Adapt<List<CampaignItemDto>>()
+                .Where( i => i.ParentEntityId == null )
+                .ToList();
 
             await SendAsync( result, cancellation: ct );
         }

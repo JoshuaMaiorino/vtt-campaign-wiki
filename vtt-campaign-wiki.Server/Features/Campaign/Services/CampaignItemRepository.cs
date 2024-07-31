@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using vtt_campaign_wiki.Server.Data;
+using vtt_campaign_wiki.Server.Features.Shared;
 using vtt_campaign_wiki.Server.Features.Shared.Services;
 
 namespace vtt_campaign_wiki.Server.Features.Campaign.Services
@@ -15,6 +16,15 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
             if( entity.CampaignId == 0 )
             {
                 throw new ArgumentException( "CampaignId must be provided for a CampaignItemEntity." );
+            }
+
+            if (entity.Position == 0)
+            {
+                decimal maxPosition = await _dbSet
+                    .Where( e => e.ParentEntityId == entity.ParentEntityId )
+                    .MaxAsync( e => (decimal?) e.Position ) ?? 0m;
+
+                entity.Position = maxPosition + Shared.Constants.ItemBase.POSITION_GAP;
             }
 
             await base.AddAsync( entity );
@@ -44,12 +54,103 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
 
         public async Task<IEnumerable<CampaignItemEntity>> GetAllAsync( int campaignId )
         {
-            return await base.GetAllAsync( i => i.CampaignId == campaignId );
+            var root =  await base.GetAllAsync( i => i.CampaignId == campaignId );
+
+            root.OrderBy( e => (double) e.Position );
+
+            if( root.Any())
+            {
+                foreach( var item in root)
+                {
+                    await LoadChildrenRecursively( item );
+                }
+            }
+
+            return root;
         }
 
         public async Task<IEnumerable<CampaignItemEntity>> GetChildrenAsync( int campaignItemId )
         {
             return await base.GetAllAsync( i => i.ParentEntityId.HasValue && i.ParentEntityId.Value == campaignItemId );
         }
+
+        public override async Task<CampaignItemEntity> GetByIdAsync( int id )
+        {
+            var root = await _dbSet
+                .Include( x => x.Children )
+                .FirstOrDefaultAsync( i => i.Id == id );
+
+            root.Children.OrderBy( c => (double) c.Position );
+
+            if (root != null)
+            {
+                await LoadChildrenRecursively( root );
+            }
+
+            return root;
+        }
+
+        public async Task UpdatePositionAndParentAsync( int itemId, int? newParentId, decimal? priorPosition, decimal? nextPosition )
+        {
+            // Find the entity by itemId
+            var entity = await _dbSet.FirstOrDefaultAsync( e => e.Id == itemId );
+            if (entity == null)
+            {
+                throw new ArgumentException( "Item not found." );
+            }
+
+            // Update the parentId
+            entity.ParentEntityId = newParentId;
+
+            // Calculate the new position
+            if (priorPosition.HasValue && nextPosition.HasValue)
+            {
+                entity.Position = (priorPosition.Value + nextPosition.Value) / 2;
+            }
+            else if (priorPosition.HasValue)
+            {
+                entity.Position = priorPosition.Value / 2;
+            }
+            else if (nextPosition.HasValue)
+            {
+                entity.Position = nextPosition.Value / 2;
+            }
+            else
+            {
+                entity.Position = Shared.Constants.ItemBase.POSITION_GAP;
+            }
+
+            if ( entity.Position < Shared.Constants.ItemBase.POSITION_THRESHOLD )
+            {
+                // Re-spread position values for all items under the same parent
+                await RespreadPositionValuesAsync( newParentId );
+            }
+            else
+            {
+                // Update the entity in the database
+                _dbSet.Update( entity );
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task RespreadPositionValuesAsync( int? parentId )
+        {
+            var items = await _dbSet
+                .Where( e => e.ParentEntityId == parentId )
+                .OrderBy( e => e.Position )
+                .ToListAsync();
+
+            decimal position = Shared.Constants.ItemBase.POSITION_GAP;
+
+            foreach (var item in items)
+            {
+                item.Position = position;
+                position += Shared.Constants.ItemBase.POSITION_GAP;
+            }
+
+            _dbSet.UpdateRange( items );
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

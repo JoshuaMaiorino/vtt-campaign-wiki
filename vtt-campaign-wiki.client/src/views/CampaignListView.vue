@@ -16,7 +16,7 @@
            color="secondary"
            offset
            @click="addNew"></v-fab>
-    <ItemEdit :title="formTitle" v-model="editDialog" v-model:item="selectedCampaign" @save="save" @close="close"/>
+    <ItemEdit :title="formTitle" v-model="editDialog" v-model:item="selectedCampaign" @save="save" @close="close" @delete="deleteItem"/>
 </template>
 
 <script setup>
@@ -102,6 +102,18 @@
         } catch (error) {
             console.error('Failed to save campaign', error);
         } 
+    }
+
+    const deleteItem = async () => {
+        if (editIndex.value > -1) {
+            try {
+                await axios.delete(`/campaigns/${selectedCampaign.value.id}`);
+                campaigns.value.splice(editIndex.value, 1);
+            } catch (error) {
+                console.error('Failed to delete campaign', error )
+            }
+        }
+        close();
     }
 
     const close = () => {

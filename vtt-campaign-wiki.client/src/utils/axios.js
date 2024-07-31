@@ -7,6 +7,7 @@ const instance = axios.create({
     withCredentials: true, // Ensure credentials are included if needed
 });
 
+// Request interceptor to add the token to headers
 instance.interceptors.request.use(config => {
     const pinia = getActivePinia();
     if (!pinia) {
@@ -20,5 +21,23 @@ instance.interceptors.request.use(config => {
     }
     return config;
 });
+
+// Response interceptor to handle token expiration
+instance.interceptors.response.use(
+    response => response,
+    error => {
+        const pinia = getActivePinia();
+        if (!pinia) {
+            throw new Error('[🍍]: "getActivePinia()" was called but there was no active Pinia.');
+        }
+
+        const authStore = useAuthStore(pinia);
+        if (error.response && error.response.status === 401) {
+            authStore.clearAuth();
+            window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default instance;

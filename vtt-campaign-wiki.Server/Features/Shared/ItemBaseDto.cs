@@ -10,5 +10,6 @@ namespace vtt_campaign_wiki.Server.Features.Shared
         public string ExternalLink { get; set; } = string.Empty;
         public int? ImageId { get; set; } = null;
         public int? AuthorId { get; set; } = null;
+        public decimal Position { get; set; }
     }
 }

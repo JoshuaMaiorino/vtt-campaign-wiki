@@ -118,6 +118,14 @@ namespace vtt_campaign_wiki.Server.Data
                 .WithMany( p => p.Sessions )
                 .HasForeignKey( sp => sp.PlayerId )
                 .OnDelete( DeleteBehavior.Cascade );
+
+            modelBuilder.Entity<ItemBaseEntity>(
+                e =>
+                {
+                    e.Property( i => i.Position ).HasColumnType( "decimal(18,5)" );
+                    e.HasIndex( i => i.Position );
+                } );
+               
         }
 
         public class VttCampaignWikiDbContextFactory : IDesignTimeDbContextFactory<VttCampaignWikiDbContext>

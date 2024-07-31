@@ -15,8 +15,11 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaignIte
         [FromForm]
         public string ExternalLink { get; set; }
         [FromForm]
+        public int? ImageId { get; set; }
+        [FromForm]
         public IFormFile Image { get; set; }
         [FromForm]
         public int? ParentEntityId { get; set; } = null;
+        public int? AuthorId { get; set; }
     }
 }

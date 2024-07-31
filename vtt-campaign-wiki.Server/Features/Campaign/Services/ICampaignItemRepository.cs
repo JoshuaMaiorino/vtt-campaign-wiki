@@ -7,5 +7,6 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
         Task AddAsync( int campaignId, CampaignItemEntity entity );
         Task<IEnumerable<CampaignItemEntity>> GetAllAsync( int campaignId );
         Task<IEnumerable<CampaignItemEntity>> GetChildrenAsync( int campaignItemId );
+        Task UpdatePositionAndParentAsync( int itemId, int? newParentId, decimal? priorPosition, decimal? nextPosition );
     }
 }

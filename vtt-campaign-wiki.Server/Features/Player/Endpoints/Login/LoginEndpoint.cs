@@ -40,7 +40,7 @@ namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.Login
             if (result.Succeeded)
             {
                 var token = GenerateJwtToken( user );
-                await SendOkAsync( new LoginResponse { Message = "Login successful", Token = token, UserName = user.UserName }, ct );
+                await SendOkAsync( new LoginResponse { Message = "Login successful", Token = token, UserName = user.UserName, UserId = user.Id }, ct );
             }
             else if (result.IsLockedOut)
             {
@@ -71,7 +71,7 @@ namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.Login
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes( 30 ),
+                expires: DateTime.Now.AddDays( 30 ),
                 signingCredentials: creds );
 
             return new JwtSecurityTokenHandler().WriteToken( token );

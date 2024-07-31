@@ -30,6 +30,11 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaignIte
                 return;
             }
 
+            if( req.ImageId == 0)
+            {
+                req.ImageId = null;
+            }
+
             var updatedItem = req.Adapt<CampaignItemEntity>();
             updatedItem.Image = await ImageHelper.GetImageFromRequest( req.Image );
 
@@ -39,7 +44,17 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaignIte
             }
 
             await _repository.UpdateAsync( updatedItem );
-            await SendNoContentAsync( ct );
+
+            // Re-fetch the item to get the updated ImageId
+            var updatedItemFromDb = await _repository.GetByIdAsync( updatedItem.Id );
+            if (updatedItemFromDb == null)
+            {
+                AddError( "Item not found after update" );
+                await SendErrorsAsync( 404, ct );
+                return;
+            }
+
+            await SendOkAsync( updatedItemFromDb.Adapt<CampaignItemDto>(), ct );
         }
     }
 }

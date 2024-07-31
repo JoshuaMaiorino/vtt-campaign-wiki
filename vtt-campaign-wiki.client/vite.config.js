@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'node:url';
-
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-vue';
 import fs from 'fs';
@@ -25,33 +24,44 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
         '--format',
         'Pem',
         '--no-password',
-    ], { stdio: 'inherit', }).status) {
+    ], { stdio: 'inherit' }).status) {
         throw new Error("Could not create certificate.");
     }
 }
 
 const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
-    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'https://localhost:7128';
+    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[ 0 ] : 'https://localhost:7128';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [plugin()],
+    plugins: [ plugin() ],
     resolve: {
         alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url))
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+            'vue': 'vue/dist/vue.esm-bundler.js'
         }
     },
     server: {
         proxy: {
             '^/weatherforecast': {
                 target,
-                secure: false
+                secure: false,
+                changeOrigin: true,
+                timeout: 60000, // Increase the timeout value
+                configure: (proxy, options) => {
+                    // Ensure the proxy timeout is set correctly
+                    proxy.on('proxyReq', (proxyReq, req, res) => {
+                        proxyReq.setHeader('X-Proxy-Timeout', '60000');
+                    });
+                }
             }
         },
         port: 5173,
         https: {
             key: fs.readFileSync(keyFilePath),
             cert: fs.readFileSync(certFilePath),
+        },
+        hmr: {
+            timeout: 60000, // Hot Module Replacement timeout
         }
     }
-})
+});

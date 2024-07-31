@@ -1,12 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import CampaignListView from '@/views/CampaignListView.vue'
 import { useCampaignStore } from '@/stores/campaign'
+
+import HomeView from '@/views/HomeView.vue'
+
 
 const routes = [
     {
+        path: '/',
+        name: 'home',
+        component: HomeView
+    },
+    {
         path: '/campaigns',
         name: 'Campaigns',
-        component: CampaignListView,
+        component: () => import('@/views/CampaignListView.vue'),
     },
     {
         path: '/campaigns/:campaignId',
@@ -14,9 +21,19 @@ const routes = [
         component: () => import('@/views/CampaignDetailView.vue')
     },
     {
+        path: '/campaigns/:campaignId/:itemId',
+        name: 'CampaignItemDetail',
+        component: () => import('@/views/CampaignItemDetailView.vue')
+    },
+    {
         path: '/login',
         name: 'Login',
         component: () => import('@/views/LoginView.vue')
+    },
+    {
+        path: '/sign-up',
+        name: 'SignUp',
+        component: () => import('@/views/SignUpView.vue')
     }
 ]
 

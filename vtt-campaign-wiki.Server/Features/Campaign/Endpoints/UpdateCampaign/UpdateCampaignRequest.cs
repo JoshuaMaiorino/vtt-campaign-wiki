@@ -12,6 +12,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaign
         public string Content { get; set; }
         [FromForm]
         public string ExternalLink { get; set; }
+        public int? ImageId { get; set; }
         [FromForm]
         public IFormFile Image { get; set; }
         [FromForm]
