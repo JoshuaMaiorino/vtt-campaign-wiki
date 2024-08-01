@@ -16,7 +16,7 @@
           <template v-slot:activator="{ props }">
             <v-chip class="pa-0" color="primary" variant="text" v-bind="props">{{ item.title }}</span>
           </template>
-          <v-img v-if="item.imageId" max-height="280" class="my-2" cover :src="\`https://localhost:7128/image/\${item.imageId}\`"></v-img>
+          <v-img v-if="item.imageId" max-height="280" class="my-2" cover :src="\`/api/image/\${item.imageId}\`"></v-img>
           <h4>{{ item.title }}</h4>
           <div v-if="item.content" v-html="item.content"></div>
         </v-tooltip>

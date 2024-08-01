@@ -14,7 +14,7 @@ namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.Register
 
         public override void Configure()
         {
-            Post( "/register" );
+            Post( "/api/register" );
             AllowAnonymous();
         }
 

@@ -13,7 +13,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.DeleteCampaignIte
 
         public override void Configure()
         {
-            Delete( "/campaigns/{campaignId:int}/items/{itemId:int}" );
+            Delete( "/api/campaigns/{campaignId:int}/items/{itemId:int}" );
         }
 
         public override async Task HandleAsync( CancellationToken ct )

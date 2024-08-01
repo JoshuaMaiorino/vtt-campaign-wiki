@@ -13,7 +13,7 @@ namespace vtt_campaign_wiki.Server.Features.Image.Endpoints.ImageById
 
         public override void Configure()
         {
-            Get( "/Image/{id:int}" );
+            Get( "/api/Image/{id:int}" );
             AllowAnonymous(); 
         }
 

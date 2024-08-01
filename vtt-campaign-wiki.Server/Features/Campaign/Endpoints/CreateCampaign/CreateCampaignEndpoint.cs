@@ -15,7 +15,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.CreateCampaign
 
         public override void Configure()
         {
-            Post( "/campaigns" );
+            Post( "/api/campaigns" );
             AllowFileUploads();
         }
 
@@ -28,7 +28,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.CreateCampaign
             await _campaignRepository.AddAsync( campaignEntity );
 
             var campaignDto = campaignEntity.Adapt<CampaignDto>();
-            await SendCreatedAtAsync<CampaignByIdEndpoint>( $"/campaigns/{campaignDto.Id}", campaignDto, null, null, false, ct );
+            await SendCreatedAtAsync<CampaignByIdEndpoint>( $"/api/campaigns/{campaignDto.Id}", campaignDto, null, null, false, ct );
         }
     }
 }

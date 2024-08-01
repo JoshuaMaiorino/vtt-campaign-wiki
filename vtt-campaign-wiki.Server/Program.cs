@@ -17,19 +17,21 @@ using vtt_campaign_wiki.Server.Features.Campaign;
 
 var builder = WebApplication.CreateBuilder( args );
 
+var config = builder.Configuration;
+
 builder.Services.AddFastEndpoints();
 builder.Services.SwaggerDocument();
 
 builder.Services.AddDbContext<VttCampaignWikiDbContext>( options =>
 {
-    options.UseSqlite( "Data Source=Data/VttCampaignWiki.db" );
+    options.UseSqlite( config.GetConnectionString( "VttCampaignWikiDbContext" ) );
 } );
 builder.Services.AddIdentity<PlayerEntity, IdentityRole<int>>()
     .AddEntityFrameworkStores<VttCampaignWikiDbContext>()
     .AddDefaultTokenProviders();
 
 // Configure JWT authentication
-var jwtSettings = builder.Configuration.GetSection( "Jwt" );
+var jwtSettings = config.GetSection( "Jwt" );
 var key = Encoding.ASCII.GetBytes( jwtSettings["Key"] );
 
 builder.Services.AddAuthentication( options =>
@@ -65,7 +67,7 @@ builder.Services.AddScoped<ICampaignItemRepository, CampaignItemRepository>();
 builder.Services.AddCors( options =>
 {
     options.AddPolicy( "AllowSpecificOrigin",
-        builder => builder.WithOrigins( "https://localhost:5173" ) // Add your frontend URL here
+        builder => builder.WithOrigins( $"{config["Url"]}:5173" ) // Add your frontend URL here
                           .AllowAnyMethod()
                           .AllowAnyHeader()
                           .AllowCredentials() );

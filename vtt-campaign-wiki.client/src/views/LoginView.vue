@@ -1,14 +1,19 @@
 <template>
-    <v-container class="d-flex flex-column justify-center align-center" fluid>
-        <v-sheet width="500">
-            <v-form @submit.prevent="login" class="width-50">
-                <h1>Login</h1>
-                <v-alert v-if="message" :text="message" :type="type" class="mb-4" />
-                <v-text-field v-model="username" label="Username" required></v-text-field>
-                <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
-                <v-btn type="submit" color="primary">Login</v-btn>
-            </v-form>
-        </v-sheet>
+    <v-container fluid>
+        <v-row class="d-flex align-center justify-center">
+            <v-col col="12"
+                   sm="6"
+                   md="4">
+                <v-form @submit.prevent="login">
+                    <h1>Login</h1>
+                    <v-alert v-if="message" :text="message" :type="type" class="mb-4" />
+                    <v-text-field v-model="username" label="Username" required></v-text-field>
+                    <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
+                    <v-btn type="submit" color="primary">Login</v-btn>
+                </v-form>
+            </v-col>
+        </v-row>
+        
     </v-container>
 </template>
 
@@ -29,7 +34,7 @@ const type = ref('');;
 
 const login = async () => {
     try {
-        const response = await axios.post('/login', {
+        const response = await axios.post('/api/login', {
             username: username.value,
             password: password.value,
         });

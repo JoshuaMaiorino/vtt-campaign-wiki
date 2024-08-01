@@ -87,46 +87,6 @@
         }
     })
 
-    const atValues = [
-        { id: 1, value: "Fredrik Sundqvist" },
-        { id: 2, value: "Patrik Sjölin" }
-    ];
-
-    const hashValues = [
-        { id: 3, value: "Fredrik Sundqvist 2" },
-        { id: 4, value: "Patrik Sjölin 2" }
-    ];
-
-    //const modules = {
-    //    name: 'mention',
-    //    module: Mention,
-    //    options: {
-    //        allowedChars: "/^[A-Za-z\sÅÄÖåäö]*$/",
-    //        mentionDenotationChars: [ "@", "#" ],
-    //        source: function(searchTerm, renderList, mentionChar) {
-    //            let values;
-
-    //            if (mentionChar === "@") {
-    //                values = atValues;
-    //            } else {
-    //                values = hashValues;
-    //            }
-
-    //            if (searchTerm.length === 0) {
-    //                renderList(values, searchTerm);
-    //            } else {
-    //                const matches = [];
-    //                for (let i = 0; i < values.length; i++)
-    //                    if (
-    //                        ~values[ i ].value.toLowerCase().indexOf(searchTerm.toLowerCase())
-    //                    )
-    //                        matches.push(values[ i ]);
-    //                renderList(matches, searchTerm);
-    //            }
-    //        }        
-    //    }
-    //}
-
     const model = defineModel()
     const item = defineModel('item')
 
@@ -138,7 +98,7 @@
 
     const imageUrl = computed(() => {
         if (item.value.imageId && item.value.imageId !== 0) {
-            return `https://localhost:7128/image/${item.value.imageId}`
+            return `/api/image/${item.value.imageId}`
         }
         if (imagePreview.value) {
             return imagePreview.value

@@ -1,7 +1,7 @@
 <template>
     <div class="campaign-detail-view">
         <div class="hero-section">
-            <v-parallax :src="`https://localhost:7128/image/${campaign.imageId}`" cover max-height="320">
+            <v-parallax :src="`/api/image/${campaign.imageId}`" cover max-height="320">
                 <v-container class="fill-height" fluid>
                     <v-row class="fill-height">
                         <v-col class="d-flex align-center justify-center">
@@ -12,7 +12,7 @@
             </v-parallax>
         </div>
 
-        <v-sheet v-if="campaign.content" color="surface-variant" class="d-flex align-center justify-center pa-12">
+        <v-sheet v-if="campaign.content" color="surface-bright" class="d-flex align-center justify-center pa-12">
             <div v-html="campaign.content"></div>
         </v-sheet>
 
@@ -31,8 +31,10 @@
         <v-fab v-if="campaign.authorId === userId" position="static" icon="mdi-dots-horizontal" class="mb-6" location="bottom end" app appear color="primary" offset @click="sidePanel = !sidePanel"></v-fab>
 
         <v-navigation-drawer temporary :model-value="sidePanel" location="right" width="450">
-            <CampaignItemTree v-if="campaign" :title="campaign?.title" v-model:items="campaign.items" />
+            <CampaignItemTree v-if="campaign" v-model:currentItem="campaign" v-model:items="campaign.items" @edit="edit"/>
         </v-navigation-drawer>
+
+        <ItemEdit title="Edit Campaign" v-model="editDialog" v-model:item="editCampaign" @save="save" @close="editDialog=false" @delete="deleteItem" />
     </div>
 </template>
 
@@ -40,11 +42,12 @@
     import { ref, computed, onMounted } from 'vue';
     import { useCampaignStore } from '@/stores/campaign';
     import { useAuthStore } from '@/stores/auth';
-    import axios from '@/utils/axios';
     import { toFormData } from '@/utils/formData';
 
     import ItemCard from '@/components/ItemCard.vue';
-    import CampaignItemTree from '@/components/CampaignItemTree.vue';
+    import CampaignItemTree from '@/components/CampaignItemTree.vue'
+    import ItemEdit from '@/components/ItemEdit.vue'
+    import axios from '@/utils/axios';
 
     const campaignStore = useCampaignStore();
     const campaign = campaignStore.selectedCampaign;
@@ -53,6 +56,32 @@
     const userId = authStore.userId;
 
     const sidePanel = ref(false);
+    const editDialog = ref(false);
+    const editCampaign = ref(null);
+
+    const edit = () => {
+        editCampaign.value = {...campaign}
+        editDialog.value = true
+    }
+
+    const save = async () => {
+        let formData = toFormData(editCampaign.value);
+
+        try {
+        
+            const response = await axios.put(`/api/campaigns/${campaign.id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            
+            Object.assign(campaign, response.data);
+
+            editDialog.value = false;
+        } catch (error) {
+            console.error('Failed to save campaign item', error);
+        }
+    }
 
 </script>
 
@@ -82,9 +111,5 @@
     .campaign-item-image {
       height: 150px;
       object-fit: cover;
-    }
-
-    .v-container {
-        max-width: 1280px;
     }
 </style>

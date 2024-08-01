@@ -1,19 +1,23 @@
 <template>
-    <v-container class="d-flex flex-column justify-center align-center" fluid>
-        <v-sheet width="500">
-            <v-form @submit.prevent="register" class="width-50">
-                <h1>Sign Up</h1>
-                <v-alert v-if="message" :type="type" class="mb-4" >
-                    <div v-html="message" />
-                </v-alert>
-                <v-text-field v-model="username" label="Username" required></v-text-field>
-                <v-text-field v-model="email" label="Email" required></v-text-field>
-                <v-text-field v-model="firstName" label="First Name" required></v-text-field>
-                <v-text-field v-model="lastName" label="Last Name" required></v-text-field>
-                <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
-                <v-btn type="submit" color="primary">Sign Up</v-btn>
-            </v-form>
-        </v-sheet>
+    <v-container fluid>
+        <v-row class="d-flex align-center justify-center">
+            <v-col col="12"
+                   sm="6"
+                   md="4">
+                <v-form @submit.prevent="register">
+                    <h1>Sign Up</h1>
+                    <v-alert v-if="message" :type="type" class="mb-4">
+                        <div v-html="message" />
+                    </v-alert>
+                    <v-text-field v-model="username" label="Username" required></v-text-field>
+                    <v-text-field v-model="email" label="Email" required></v-text-field>
+                    <v-text-field v-model="firstName" label="First Name" required></v-text-field>
+                    <v-text-field v-model="lastName" label="Last Name" required></v-text-field>
+                    <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
+                    <v-btn type="submit" color="primary">Sign Up</v-btn>
+                </v-form>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
@@ -34,7 +38,7 @@
 
     const register = async () => {
         try {
-            const response = await axios.post('/register', {
+            const response = await axios.post('/api/register', {
                 username: username.value,
                 email: email.value,
                 firstName: firstName.value,

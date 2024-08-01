@@ -14,7 +14,7 @@ namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.PlayerById
 
         public override void Configure()
         {
-            Get( "/players/{id:int}" );
+            Get( "/api/players/{id:int}" );
         }
 
         public override async Task HandleAsync( CancellationToken ct )

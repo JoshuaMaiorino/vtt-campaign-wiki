@@ -14,7 +14,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.CreateCampaignIte
 
         public override void Configure()
         {
-            Post( "/campaigns/{campaignId:int}/items" );
+            Post( "/api/campaigns/{campaignId:int}/items" );
             AllowFileUploads();
         }
 

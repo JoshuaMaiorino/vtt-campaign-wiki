@@ -14,7 +14,7 @@ namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.PlayerList
 
         public override void Configure()
         {
-            Get( "/players" );
+            Get( "/api/players" );
         }
 
         public override async Task HandleAsync( CancellationToken ct )

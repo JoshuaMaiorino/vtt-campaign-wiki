@@ -1,7 +1,7 @@
 <template>
     <v-btn v-if="!authStore.user" text to="/login" class="ml-4 mr-4">Login</v-btn>
     <v-avatar v-else color="primary" size="32" class="ml-4 mr-4">
-        <span>{{ authStore.user.charAt(0) }}</span>
+        <span>{{ authStore.user.charAt(0).toUpperCase() }}</span>
     </v-avatar>
 </template>
 

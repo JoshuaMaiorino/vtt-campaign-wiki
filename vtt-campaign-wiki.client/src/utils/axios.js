@@ -3,7 +3,6 @@ import { getActivePinia } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
 
 const instance = axios.create({
-    baseURL: 'https://localhost:7128', // Update with your backend URL
     withCredentials: true, // Ensure credentials are included if needed
 });
 
@@ -32,7 +31,7 @@ instance.interceptors.response.use(
         }
 
         const authStore = useAuthStore(pinia);
-        if (error.response && error.response.status === 401) {
+        if (error.response && error.response.status === 401 && window.location.href != '/login') {
             authStore.clearAuth();
             window.location.href = '/login';
         }

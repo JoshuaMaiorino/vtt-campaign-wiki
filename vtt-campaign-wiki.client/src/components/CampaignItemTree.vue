@@ -1,6 +1,7 @@
 <template>
-    <v-toolbar :title="title">
-        <v-btn icon="mdi-plus" @click="addNew"></v-btn>
+    <v-toolbar :title="currentItem?.title">
+        <v-btn icon="mdi-plus" @click="addNew()"></v-btn>
+        <v-btn icon="mdi-pencil" @click="$emit('edit')" />
     </v-toolbar>
     <v-list class="ml-2">
         <Draggable ref="tree" class="mtl-tree" v-model="items" treeLine :defaultOpen="false" triggerClass="mdi-reorder-horizontal" @change="update">
@@ -28,7 +29,6 @@
 </template>
 <script setup>
     import { ref, computed, nextTick } from 'vue'
-    import { useRoute } from 'vue-router'
 
     import { BaseTree, Draggable, pro, OpenIcon, dragContext } from '@he-tree/vue'
     import '@he-tree/vue/style/default.css'
@@ -41,10 +41,16 @@
     import axios from '@/utils/axios';
     import { toFormData } from '@/utils/formData';
 
-    const route = useRoute()
-
     const items = defineModel('items')
-    const props = defineProps(['title'])
+    const currentItem = defineModel('currentItem')
+    const emit = defineEmits(['edit']);
+
+    const props = defineProps( {
+        isCampaign: {
+            type: Boolean,
+            default: false
+        }
+    })
 
     const authStore = useAuthStore();
     const campaignStore = useCampaignStore();
@@ -67,7 +73,7 @@
         imageId: 0,
         authorId: null,
         image: null,
-        parentEntityId: route.params.itemId
+        parentEntityId: null
     };
 
     const selectedCampaignItem = ref({ ...defaultCampaignItem });
@@ -83,7 +89,9 @@
         {
             selectedCampaignItem.value.parentEntityId = parentStat.data.id
             selectedStat.value = parentStat
-        }
+        } else {{
+            selectedCampaignItem.value.parentEntityId = props.isCampaign ? null : currentItem.value.id
+        }}
         
         editDialog.value = true;
     };
@@ -101,7 +109,7 @@
 
         try {
             if (selectedCampaignItem.value.id !== -1) {
-                const response = await axios.put(`/campaigns/${campaign.id}/items/${selectedCampaignItem.value.id}`, formData, {
+                const response = await axios.put(`/api/campaigns/${campaign.id}/items/${selectedCampaignItem.value.id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -112,7 +120,7 @@
                 });
 
             } else {
-                const response = await axios.post(`/campaigns/${campaign.id}/items`, formData, {
+                const response = await axios.post(`/api/campaigns/${campaign.id}/items`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -141,7 +149,7 @@
     const deleteItem = async () => {
         if (selectedCampaignItem.value.id) {
             try {
-                await axios.delete(`/campaigns/${campaign.id}/items/${selectedCampaignItem.value.id}`);
+                await axios.delete(`/api/campaigns/${campaign.id}/items/${selectedCampaignItem.value.id}`);
                 tree.value.remove(selectedStat.value)
             } catch (error) {
                 console.error('Failed to delete campaign', error)
@@ -185,7 +193,7 @@
 
 
              try {
-                await axios.post(`/campaigns/${campaign.id}/items/${itemId}/position`, req )
+                await axios.post(`/api/campaigns/${campaign.id}/items/${itemId}/position`, req )
              } catch( error ){
                      console.error('Failed to update campaign item', error)
              }

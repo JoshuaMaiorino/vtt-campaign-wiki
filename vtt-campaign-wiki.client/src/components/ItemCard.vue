@@ -2,7 +2,7 @@
     <v-card flat rounded="0" >
         <v-img v-if="item?.imageId" color="surface-variant"
                height="200"
-               :src="`https://localhost:7128/image/${item.imageId}`"
+               :src="`/api/image/${item.imageId}`"
                cover />
         <v-toolbar color="transparent" :title="item?.title">
         </v-toolbar>

@@ -1,4 +1,19 @@
 <template>
+    <div class="hero-section">
+        <v-parallax src="/assets/1cbda947-8b8a-4011-847c-b603c141e4db.webp"
+                    gradient="to top right, rgba(100,115,201,.33), rgba(25,32,72,.7)"
+                    cover max-height="320"
+                    color="surface-variant">
+            <v-container class="fill-height" fluid>
+                <v-row class="fill-height">
+                    <v-col class="d-flex align-center justify-center">
+                        <h1 class="hero-title">Campaigns</h1>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </v-parallax>
+    </div>
+    
     <v-container>
         <v-row>
             <v-col v-for="campaign in campaigns" :key="campaign.id" cols="6">
@@ -7,13 +22,13 @@
         </v-row>
 
     </v-container>
-    <v-fab icon="mdi-dots-horizontal"
+    <v-fab icon="mdi-plus"
            class="mb-12"
            location="bottom end"
            absolute
            app
            appear
-           color="secondary"
+           color="primary"
            offset
            @click="addNew"></v-fab>
     <ItemEdit :title="formTitle" v-model="editDialog" v-model:item="selectedCampaign" @save="save" @close="close" @delete="deleteItem"/>
@@ -54,7 +69,7 @@
 
     const fetchCampaigns = async () => {
         try {
-            const response = await axios.get('/campaigns');
+            const response = await axios.get('/api/campaigns');
             campaigns.value = response.data;
         } catch (error) {
             console.error('Failed to fetch campaigns', error);
@@ -84,14 +99,14 @@
 
         try {
             if (editIndex.value > -1) {
-                await axios.put(`/campaigns/${selectedCampaign.value.id}`, formData, {
+                await axios.put(`/api/campaigns/${selectedCampaign.value.id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
                 Object.assign(campaigns.value[ editIndex.value ], selectedCampaign.value);
             } else {
-                const response = await axios.post('/campaigns', formData, {
+                const response = await axios.post('/api/campaigns', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -107,7 +122,7 @@
     const deleteItem = async () => {
         if (editIndex.value > -1) {
             try {
-                await axios.delete(`/campaigns/${selectedCampaign.value.id}`);
+                await axios.delete(`/api/campaigns/${selectedCampaign.value.id}`);
                 campaigns.value.splice(editIndex.value, 1);
             } catch (error) {
                 console.error('Failed to delete campaign', error )

@@ -13,7 +13,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.CampaignItemById
 
         public override void Configure()
         {
-            Get( "/campaigns/{campaignId:int}/items/{itemId:int}" );
+            Get( "/api/campaigns/{campaignId:int}/items/{itemId:int}" );
         }
 
         public override async Task HandleAsync( CancellationToken ct )

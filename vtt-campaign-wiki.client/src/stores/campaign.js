@@ -11,13 +11,13 @@ export const useCampaignStore = defineStore('campaign', {
     actions: {
         async fetchCampaign (campaignId) {
             try {
-                const response = await axios.get(`/campaigns/${campaignId}`);
+                const response = await axios.get(`/api/campaigns/${campaignId}`);
                 this.selectedCampaign = response.data;
             } catch (error) {
                 console.error('Failed to fetch campaign:', error);
             }
             try {
-                const response = await axios.get(`/campaigns/${campaignId}/items`);
+                const response = await axios.get(`/api/campaigns/${campaignId}/items`);
                 console.log(response)
                 this.selectedCampaign.items = response.data;
             } catch (error) {

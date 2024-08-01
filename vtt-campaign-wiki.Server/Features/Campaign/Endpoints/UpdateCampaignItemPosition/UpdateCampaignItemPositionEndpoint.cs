@@ -13,7 +13,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaignIte
 
         public override void Configure()
         {
-            Post( "/campaigns/{campaignId:int}/items/{itemId:int}/Position" );
+            Post( "/api/campaigns/{campaignId:int}/items/{itemId:int}/Position" );
         }
 
         public override async Task HandleAsync(UpdateCampaignItemPositionRequest req, CancellationToken ct )

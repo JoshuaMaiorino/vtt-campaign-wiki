@@ -26,22 +26,22 @@
 <template>
     <v-app full-height>
         <v-app-bar color="grey-darken-4"
-                    scroll-behavior="elevate"
-                    floating
-                    >
+                   scroll-behavior="elevate"
+                   floating>
             <v-toolbar-title class="cursor-pointer"
                              @click="navigateHome">
-                {{ `${campaignStore.selectedCampaign?.title} Campaign Wiki` ?? 'Campaign Wikis' }}
+                {{ campaignStore.selectedCampaign?.title }} Campaign Wiki
             </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn text to="/sessions">Sessions</v-btn>
             <template v-if="campaignStore.selectedCampaign">
-                <v-spacer></v-spacer>
-                <v-btn text 
-                       v-for="item in navItems" 
-                       :to="`/campaigns/${campaignStore.selectedCampaign.id}/${item.id}`" 
-                       :key="item.id">{{ item.title }}
+                <v-btn text
+                       v-for="item in navItems"
+                       :to="`/campaigns/${campaignStore.selectedCampaign.id}/${item.id}`"
+                       :key="item.id">
+                    {{ item.title }}
                 </v-btn>
             </template>
-            <v-spacer></v-spacer>
             <v-btn text to="/campaigns">Campaigns</v-btn>
             <LoginNavItem />
         </v-app-bar>
@@ -50,5 +50,8 @@
         </v-main>
     </v-app>
 </template>
-    <style>
-    </style>
+<style>
+    .v-container {
+        max-width: 1280px;
+    }
+</style>

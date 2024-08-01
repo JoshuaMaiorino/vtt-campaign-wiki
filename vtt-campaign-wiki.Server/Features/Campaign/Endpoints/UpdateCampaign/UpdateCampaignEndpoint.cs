@@ -14,7 +14,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaign
 
         public override void Configure()
         {
-            Put( "/campaigns/{id:int}" );
+            Put( "/api/campaigns/{id:int}" );
             AllowFileUploads();
         }
 

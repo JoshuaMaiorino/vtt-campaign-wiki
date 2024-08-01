@@ -22,7 +22,7 @@ namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.Login
 
         public override void Configure()
         {
-            Post( "/login" );
+            Post( "/api/login" );
             AllowAnonymous();
         }
 

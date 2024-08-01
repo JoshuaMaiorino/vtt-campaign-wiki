@@ -13,7 +13,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.CampaignById
 
         public override void Configure()
         {
-            Get( "/campaigns/{id:int}" );
+            Get( "/api/campaigns/{id:int}" );
             
         }
 

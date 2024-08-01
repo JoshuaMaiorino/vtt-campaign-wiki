@@ -3,7 +3,6 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import router from './router'
 import pinia from './stores'
-import dynamicHtml from './directives/dynamicHtml.js'
 
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
@@ -17,6 +16,5 @@ app.use(pinia)
 app.use(vuetify)
 app.use(router)
 app.component('QuillEditor', QuillEditor)
-app.directive('dynamic-html', dynamicHtml)
 
 app.mount('#app')
