@@ -119,6 +119,7 @@
 
     function saveItem () {
         emit('save', item.value)
+        imagePreview.value = null
     }
 
     function clearImage () {
