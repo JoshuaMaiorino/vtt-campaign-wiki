@@ -17,6 +17,16 @@
         }}
     }
 
+    const navigateSessions = () => {
+        if (campaignStore.selectedCampaign) {
+            router.push(`/campaigns/${campaignStore.selectedCampaign.id}/sessions`)
+        } else {
+            {
+                router.push('/sessions')
+            }
+        }
+    }
+
     const navItems = computed( () => {
         return campaignStore.selectedCampaign?.items?.slice(0, 5) ?? []
     })
@@ -32,9 +42,13 @@
                              @click="navigateHome">
                 {{ campaignStore.selectedCampaign?.title }} Campaign Wiki
             </v-toolbar-title>
+            <v-divider vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-btn text to="/sessions">Sessions</v-btn>
+
             <template v-if="campaignStore.selectedCampaign">
+
+                <v-btn text @click="navigateSessions">Sessions</v-btn>
+
                 <v-btn text
                        v-for="item in navItems"
                        :to="`/campaigns/${campaignStore.selectedCampaign.id}/${item.id}`"
@@ -42,7 +56,8 @@
                     {{ item.title }}
                 </v-btn>
             </template>
-            <v-btn text to="/campaigns">Campaigns</v-btn>
+            <v-btn class="mr-4" text to="/campaigns">Campaigns</v-btn>
+            <v-divider vertical></v-divider>
             <LoginNavItem />
         </v-app-bar>
         <v-main style="min-height: 300px;">
@@ -53,5 +68,8 @@
 <style>
     .v-container {
         max-width: 1280px;
+    }
+    ul, ol {
+        margin-left: 30px;
     }
 </style>

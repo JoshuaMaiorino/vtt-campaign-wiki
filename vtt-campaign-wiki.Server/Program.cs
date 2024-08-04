@@ -61,7 +61,13 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddScoped( typeof( IRepositoryBase<> ), typeof( RepositoryBase<> ) );
 builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+builder.Services.AddScoped<ICampaignRepository, CampaignRepository>();
 builder.Services.AddScoped<ICampaignItemRepository, CampaignItemRepository>();
+
+builder.Services.AddControllers( options =>
+{
+    options.ModelBinderProviders.Insert( 0, new CustomModelBinderProvider() );
+} );
 
 // Add CORS policy
 builder.Services.AddCors( options =>

@@ -44,5 +44,10 @@ namespace vtt_campaign_wiki.Server.Features.Player.Services
                 LastName = player.LastName
             };
         }
+
+        protected override IQueryable<PlayerEntity> ApplySearch( IQueryable<PlayerEntity> query, string search )
+        {
+            return query.Where( p  => p.UserName == search );
+        }
     }
 }

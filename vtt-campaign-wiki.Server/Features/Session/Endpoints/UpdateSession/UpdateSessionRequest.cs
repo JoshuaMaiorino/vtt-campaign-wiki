@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaign
+namespace vtt_campaign_wiki.Server.Features.Session.Endpoints.UpdateSession
 {
-    public class UpdateCampaignRequest
+    public class UpdateSessionRequest
     {
         [FromForm]
         public int Id { get; set; }
@@ -12,12 +12,15 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaign
         public string Content { get; set; }
         [FromForm]
         public string ExternalLink { get; set; }
-        public int? ImageId { get; set; }
         [FromForm]
         public IFormFile Image { get; set; }
         [FromForm]
-        public int? AuthorId { get; set; }
+        public int Number { get; set; }
         [FromForm]
-        public IEnumerable<CampaignPlayerDto> Players { get; set; }
+        public DateOnly? Date { get; set; }
+        [FromForm]
+        public int CampaignId { get; set; }
+        [FromForm]
+        public int? AuthorId { get; set; }
     }
 }

@@ -19,32 +19,40 @@
             </v-card-title>
 
             <v-card-text>
-
-                <v-img v-if="imageUrl" :src="imageUrl" class="mb-4" @click="triggerFileInput">
+                
+                <v-img :src="imageUrl" class="d-flex align-top justify-end mb-4" @click="triggerFileInput" min-height="300">
                     <template #placeholder>
-                        <v-skeleton-loader type="image" />
+                        <v-sheet color="surface-light" class="d-flex align-center justify-center fill-height">
+                            <v-icon size="64" color="grey">mdi-image</v-icon>
+                        </v-sheet>
                     </template>
+
+
+                    <v-btn v-if="imageUrl" variant="text" class="ma-2" color="grey-lighten-4" @click.stop="clearImage" icon>
+                        <v-icon>mdi-delete</v-icon>
+                    </v-btn>
                 </v-img>
 
-                <!-- Upload Image Input -->
-                <v-file-input v-model="item.image" label="Upload Image" accept="image/*" @change="handleFileChange" prepend-icon="mdi-file-image">
-                    <template #append>
-                        <v-btn variant="plain" @click="clearImage" icon>
-                            <v-icon>mdi-delete</v-icon>
-                        </v-btn>
-                    </template>
+                <v-file-input v-model="item.image" label="Upload Image" accept="image/*" @change="handleFileChange" prepend-icon="mdi-file-image" style="display:none;">
                 </v-file-input>
 
+                <v-row>
+                    <v-col>
+                        <v-text-field v-if="item.hasOwnProperty('number')" label="Session Number" type="number" v-model="item.number" />
+                    </v-col>
+                    <v-col>
+                        <v-text-field v-if="item.hasOwnProperty('date')" label="Date" type="date" v-model="item.date" />
+                    </v-col>
+                </v-row>
+
                 <v-text-field v-model="item.title"
-                              label="Name"></v-text-field>
+                              label="Name" />
 
                 <v-label>Content</v-label>
                 <QuillEditor placeholder="Content..."
                              v-model:content="item.content"
                              contentType="html"
-                             toolbar="minimal"
-                             
-                             ></QuillEditor>
+                             toolbar="minimal"></QuillEditor>
 
 
                 <v-text-field v-model="item.externalLink"
@@ -114,7 +122,7 @@
     }
 
     function clearImage () {
-        item.value.imageId = 0
+        item.value.imageId = null
         item.value.image = null
         imagePreview.value = null
     }
@@ -141,4 +149,9 @@
         max-width: 100%;
         height: auto;
     }
+
+    .ql-editor {
+        min-height: 300px; /* Set your desired minimum height */
+    }
+
 </style>

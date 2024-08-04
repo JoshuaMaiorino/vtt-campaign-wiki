@@ -1,12 +1,13 @@
-﻿using vtt_campaign_wiki.Server.Features.Shared.Services;
+﻿using vtt_campaign_wiki.Server.Features.Campaign.Services;
+using vtt_campaign_wiki.Server.Features.Shared.Services;
 
 namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.CampaignList
 {
     public class CampaignListEndpoint : EndpointWithoutRequest<IEnumerable<CampaignDto>>
     {
-        private readonly IRepositoryBase<CampaignEntity> _campaignRepository;
+        private readonly ICampaignRepository _campaignRepository;
 
-        public CampaignListEndpoint( IRepositoryBase<CampaignEntity> campaignRepository )
+        public CampaignListEndpoint( ICampaignRepository campaignRepository )
         {
             _campaignRepository = campaignRepository;
         }

@@ -1,5 +1,6 @@
 ﻿using FastEndpoints;
 using vtt_campaign_wiki.Server.Features.Player.Services;
+using vtt_campaign_wiki.Server.Features.Shared;
 
 namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.PlayerList
 {
@@ -19,16 +20,14 @@ namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.PlayerList
 
         public override async Task HandleAsync( CancellationToken ct )
         {
-            var players = await _playerRepository.GetAllAsync();
-            var playerDtos = players.Select( player => new PlayerDto
+            var options = new PaginationParameter()
             {
-                Id = player.Id,
-                UserName = player.UserName,
-                FirstName = player.FirstName,
-                LastName = player.LastName
-            } );
+                Search = Query<string>( "search", false )
+            };
+            
+            var (players, count ) = await _playerRepository.GetAllAsync( options );
 
-            await SendOkAsync( playerDtos, ct );
+            await SendOkAsync( players.Adapt<IEnumerable<PlayerDto>>(), ct );
         }
     }
 }

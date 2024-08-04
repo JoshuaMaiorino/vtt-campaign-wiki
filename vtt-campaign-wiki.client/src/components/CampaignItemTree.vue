@@ -105,8 +105,6 @@
     const save = async () => {
         let formData = toFormData(selectedCampaignItem.value);
 
-        console.log( "Selected Campaign Item Id:", selectedCampaignItem.value )
-
         try {
             if (selectedCampaignItem.value.id !== -1) {
                 const response = await axios.put(`/api/campaigns/${campaign.id}/items/${selectedCampaignItem.value.id}`, formData, {

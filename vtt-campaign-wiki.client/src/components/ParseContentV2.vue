@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-html="htmlWithPlaceholders" v-dynamic-component="{ phrases, components, items }"></div>
+        <div v-html="htmlWithPlaceholders" v-dynamic-component="{ phrases, components, items, placeHolders }"></div>
     </div>
 </template>
 
@@ -46,7 +46,6 @@
         },
         props: ['content', 'itemId', 'campaignItems'],
         setup (props) {
-            const htmlString = ref('<p>This is a test string with a phrase to match.</p>');
             const items = computed(() => {
                 return flattenItems(props.campaignItems)
                     .filter(item => item.id !== props.itemId && (item.content || item.imageId ) );
@@ -54,12 +53,19 @@
 
             const phrases = computed(() => items.value.map(item => item.title));
 
-            const components = ref([{ name: 'CustomComponent', component: CustomComponent }]);
+            const components = ref([ { name: 'CustomComponent', component: CustomComponent } ]);
 
+            const placeHolders = ref([]);
+            let uniqueId = 0;
             const replacePhrasesWithPlaceholders = (html, phrases) => {
               phrases.forEach((phrase, index) => {
-                const regex = new RegExp(phrase, 'gi');
-                html = html.replace(regex, `<span class="component-placeholder" id="component-placeholder-${index}"></span>`);
+                  const regex = new RegExp(`\\b${phrase}\\b`, 'gi');;
+                  html = html.replace(regex, () => {
+                      const id = `component-placeholder-${uniqueId}`;
+                      placeHolders.value.push({ id, index })
+                      uniqueId++;
+                      return `<span class="component-placeholder" id="component-placeholder-${id}"></span>`;
+                  });
               });
               return html;
             };
@@ -72,17 +78,21 @@
                 htmlWithPlaceholders,
                 phrases,
                 components,
-                items
+                placeHolders,
+                items,
             };
             },
         directives: {
             dynamicComponent: {
                 mounted (el, binding) {
-                    const { phrases, components, items } = binding.value;
-                    const componentsToRender = phrases.map((phrase, index) => ({
+                    const { phrases, components, items, placeHolders } = binding.value;
+
+                    console.log(binding.value)
+
+                    const componentsToRender = placeHolders.map((ph, index) => ({
                         type: components.find(comp => comp.name === 'CustomComponent').component,
-                        id: `component-placeholder-${index}`,
-                        item: items[ index ] // Assuming items are in the same order as phrases
+                        id: `component-placeholder-${ph.id}`,
+                        item: items[ ph.index ] // Assuming items are in the same order as phrases
                     }));
 
                     componentsToRender.forEach(component => {

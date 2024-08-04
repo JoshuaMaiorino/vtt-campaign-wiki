@@ -1,13 +1,14 @@
 ﻿using vtt_campaign_wiki.Server.Features.Shared.Services;
 using vtt_campaign_wiki.Server.Features.Image.Services;
+using vtt_campaign_wiki.Server.Features.Campaign.Services;
 
 namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaign
 {
     public class UpdateCampaignEndpoint : Endpoint<UpdateCampaignRequest, CampaignDto>
     {
-        private readonly IRepositoryBase<CampaignEntity> _campaignRepository;
+        private readonly ICampaignRepository _campaignRepository;
 
-        public UpdateCampaignEndpoint( IRepositoryBase<CampaignEntity> campaignRepository )
+        public UpdateCampaignEndpoint( ICampaignRepository campaignRepository )
         {
             _campaignRepository = campaignRepository;
         }

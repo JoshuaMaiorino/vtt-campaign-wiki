@@ -21,6 +21,11 @@ const routes = [
         component: () => import('@/views/CampaignDetailView.vue')
     },
     {
+        path: '/campaigns/:campaignId/edit',
+        name: 'EditCampaign',
+        component: () => import('@/views/EditCampaignDetailView.vue')
+    },
+    {
         path: '/campaigns/:campaignId/:itemId',
         name: 'CampaignItemDetail',
         component: () => import('@/views/CampaignItemDetailView.vue')
@@ -37,6 +42,7 @@ const routes = [
     },
     {
         path: '/sessions',
+        alias: ['/campaigns/:campaignId/sessions'],
         name: 'Sessions',
         component: () => import('@/views/SessionsListView.vue')
     }
@@ -52,7 +58,7 @@ router.beforeEach(async (to, from, next) => {
     const campaignStore = useCampaignStore();
     const campaignId = to.params.campaignId;
 
-    if (campaignId && (!campaignStore.selectedCampaign || campaignStore.selectedCampaign.id !== campaignId)) {
+    if (campaignId && (!campaignStore.selectedCampaign || campaignStore.selectedCampaign.id != campaignId)) {
         await campaignStore.fetchCampaign(campaignId);
     }
 

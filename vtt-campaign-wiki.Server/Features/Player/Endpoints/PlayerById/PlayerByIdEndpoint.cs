@@ -31,9 +31,7 @@ namespace vtt_campaign_wiki.Server.Features.Player.Endpoints.PlayerById
             var playerDto = new PlayerDto
             {
                 Id = player.Id,
-                UserName = player.UserName,
-                FirstName = player.FirstName,
-                LastName = player.LastName
+                UserName = player.UserName
             };
 
             await SendOkAsync( playerDto, ct );

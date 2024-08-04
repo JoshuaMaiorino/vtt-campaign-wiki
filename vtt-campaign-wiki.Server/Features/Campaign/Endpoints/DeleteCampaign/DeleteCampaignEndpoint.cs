@@ -1,12 +1,13 @@
-﻿using vtt_campaign_wiki.Server.Features.Shared.Services;
+﻿using vtt_campaign_wiki.Server.Features.Campaign.Services;
+using vtt_campaign_wiki.Server.Features.Shared.Services;
 
 namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.DeleteCampaign
 {
     public class DeleteCampaignEndpoint : EndpointWithoutRequest<EmptyResponse>
     {
-        private readonly IRepositoryBase<CampaignEntity> _campaignRepository;
+        private readonly ICampaignRepository _campaignRepository;
 
-        public DeleteCampaignEndpoint( IRepositoryBase<CampaignEntity> campaignRepository )
+        public DeleteCampaignEndpoint( ICampaignRepository campaignRepository )
         {
             _campaignRepository = campaignRepository;
         }

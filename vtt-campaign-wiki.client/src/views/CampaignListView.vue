@@ -22,15 +22,7 @@
         </v-row>
 
     </v-container>
-    <v-fab icon="mdi-plus"
-           class="mb-12"
-           location="bottom end"
-           absolute
-           app
-           appear
-           color="primary"
-           offset
-           @click="addNew"></v-fab>
+    <v-fab position="static" icon="mdi-plus" class="mb-6" location="bottom end" app appear color="primary" offset @click="addNew"></v-fab>
     <ItemEdit :title="formTitle" v-model="editDialog" v-model:item="selectedCampaign" @save="save" @close="close" @delete="deleteItem"/>
 </template>
 

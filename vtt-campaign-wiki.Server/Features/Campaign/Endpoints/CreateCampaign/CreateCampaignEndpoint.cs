@@ -1,4 +1,5 @@
 ﻿using vtt_campaign_wiki.Server.Features.Campaign.Endpoints.CampaignById;
+using vtt_campaign_wiki.Server.Features.Campaign.Services;
 using vtt_campaign_wiki.Server.Features.Image.Services;
 using vtt_campaign_wiki.Server.Features.Shared.Services;
 
@@ -6,9 +7,9 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.CreateCampaign
 {
     public class CreateCampaignEndpoint : Endpoint<CreateCampaignRequest, CampaignDto>
     {
-        private readonly IRepositoryBase<CampaignEntity> _campaignRepository;
+        private readonly ICampaignRepository _campaignRepository;
 
-        public CreateCampaignEndpoint( IRepositoryBase<CampaignEntity> campaignRepository )
+        public CreateCampaignEndpoint( ICampaignRepository campaignRepository )
         {
             _campaignRepository = campaignRepository;
         }
