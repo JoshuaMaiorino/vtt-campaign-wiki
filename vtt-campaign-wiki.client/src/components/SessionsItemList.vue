@@ -2,7 +2,7 @@
 
     <v-toolbar title="Sessions" class="d-flex align-center">
         <v-pagination density="compact"
-                      :length="pages > 5 ? 5 : pages"
+                      :length="pages"
                       :show-first-last-page="pages > 5"
                       v-model="page"
                       @update:modelValue="fetchSessions"

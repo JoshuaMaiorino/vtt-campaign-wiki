@@ -39,7 +39,7 @@
         <v-row v-if="pages > 1">
             <v-col>
                 <v-pagination density="compact"
-                              :length="pages > 5 ? 5 : pages"
+                              :length="pages"
                               :show-first-last-page="pages > 5"
                               v-model="page"
                               
