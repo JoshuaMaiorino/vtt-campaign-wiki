@@ -115,6 +115,7 @@
 
     function closeDialog () {
         emit('close')
+        imagePreview.value = null
     }
 
     function saveItem () {

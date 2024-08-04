@@ -90,7 +90,7 @@
             selectedCampaignItem.value.parentEntityId = parentStat.data.id
             selectedStat.value = parentStat
         } else {{
-            selectedCampaignItem.value.parentEntityId = props.isCampaign ? null : currentItem.value.id
+            selectedCampaignItem.value.parentEntityId = props.isCampaign ? 0 : currentItem.value.id
         }}
         
         editDialog.value = true;

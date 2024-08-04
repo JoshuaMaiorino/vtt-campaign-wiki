@@ -51,7 +51,7 @@
         <v-fab v-if="campaign.authorId === userId" position="static" icon="mdi-dots-horizontal" class="mb-6" location="bottom end" app appear color="primary" offset @click="sidePanel = !sidePanel"></v-fab>
 
         <v-navigation-drawer temporary :model-value="sidePanel" location="right" width="450">
-            <CampaignItemTree v-if="campaign" v-model:currentItem="campaign" v-model:items="campaign.items" @edit="$router.push(`/campaigns/${campaign.id}/edit`)"/>
+            <CampaignItemTree v-if="campaign" v-model:currentItem="campaign" v-model:items="campaign.items" @edit="$router.push(`/campaigns/${campaign.id}/edit`)" :isCampaign="true"/>
         </v-navigation-drawer>
 
         <ItemEdit title="Edit Campaign" v-model="editDialog" v-model:item="editCampaign" @save="save" @close="editDialog=false" @delete="deleteItem" />
