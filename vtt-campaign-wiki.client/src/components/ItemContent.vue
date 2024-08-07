@@ -1,28 +1,7 @@
 <template>
-        <template v-if="!level || level == 0">
-            <v-img :src="hasImage ? `/api/image/${item.imageId}` : ''"
-                   cover
-                   max-height="320"
-                   color="surface-light"
-                   class="mb-2">
-                <v-container class="fill-height">
-                    <v-row>
-                        <v-col class="d-flex flex-column">
-                            <h1 :class="hasImage ? 'hero-title' : ''">{{ item?.title }}</h1>
-                            <ParsedContent v-if="item?.content" :content="item.content" :itemId="item.id" :campaignItems="campaign?.items" />
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </v-img>
-
-            <v-container v-if="hasChildren">
-                <v-row>
-                    <v-col v-for="child in item?.children" :key="child.id" :cols="level === 0 ? 4 : 12">
-                        <ItemContent :item="child" @selected="child" :level="level + 1" />
-                    </v-col>
-                </v-row>
-            </v-container>
-        </template>
+    <template v-if="!level || level == 0">
+        <TopLevelContent :item="item" />
+    </template>
 
         <template v-if="level === 1">
             <v-card flat rounded="0">
@@ -66,6 +45,7 @@
     import { useCampaignStore } from '@/stores/campaign.js'
     import ItemContent from '@/components/ItemContent.vue'
     import ParsedContent from '@/components/ParseContentV2.vue'
+    import TopLevelContent from '@/components/TopLevelContent.vue'
 
     const authStore = useAuthStore()
     const campaignStore = useCampaignStore()

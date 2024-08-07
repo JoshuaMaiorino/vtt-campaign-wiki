@@ -12,13 +12,15 @@ import vuetify from '@/plugins/vuetify'
 const CustomComponent = markRaw(defineComponent({
   props: ['item'],
   template: `
-    <v-tooltip :text="item.title" max-width="600" theme="dark">
+    <v-tooltip max-width="600" class="pa-0">
       <template v-slot:activator="{ props }">
         <span class="text-primary" v-bind="props">{{ item.title }}</span>
       </template>
-      <v-img v-if="item.imageId" max-height="280" class="my-2" cover :src="\`/api/image/\${item.imageId}\`"></v-img>
-      <h4>{{ item.title }}</h4>
-      <div v-if="item.content" v-html="item.content"></div>
+      <v-card elevation="8">
+      <v-toolbar color="surface-variant" density="compact" :title="item.title" class="mb-0" />
+      <v-img v-if="item.imageId" max-height="280" cover :src="\`/api/image/\${item.imageId}\`" class="mt-0"></v-img>
+      <v-card-text v-if="item.content" v-html="item.content"></v-card-text>
+      </v-card>
     </v-tooltip>
   `,
 }));
@@ -37,7 +39,22 @@ const flattenItems = (items) => {
     };
     recurse(items);
     return flatList;
-};
+    };
+
+const removeInlineStyles = (html) => {
+        // Parse the HTML string into a document
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // Remove all inline styles
+        const elements = doc.querySelectorAll('[style]');
+        elements.forEach(element => {
+            element.removeAttribute('style');
+        });
+
+        // Serialize the document back to a string
+        return doc.body.innerHTML;
+    }
 
 export default {
     name: 'DynamicHtmlRenderer',
@@ -67,7 +84,7 @@ export default {
                   return `<span class="component-placeholder" id="component-placeholder-${id}"></span>`;
               });
           });
-          return html;
+            return html;
         };
 
         const htmlWithPlaceholders = computed(() => {
@@ -87,8 +104,6 @@ export default {
             mounted (el, binding) {
                 const { phrases, components, items, placeHolders } = binding.value;
 
-                console.log(binding.value);
-
                 const componentsToRender = placeHolders.map((ph, index) => ({
                     type: components.find(comp => comp.name === 'CustomComponent').component,
                     id: `component-placeholder-${ph.id}`,
@@ -99,6 +114,7 @@ export default {
                     const placeholder = el.querySelector(`#${component.id}`);
                     if (placeholder) {
                         try {
+                            
                             const app = createApp({
                                 render () {
                                     return h(component.type, { item: component.item });
@@ -119,8 +135,14 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
     .component-placeholder {
         display: inline-block;
+    }
+
+    .v-overlay__content {
+        --v-theme-surface-variant: 255, 255, 255, 0;
+        --v-theme-on-surface-variant: 0, 0, 0, 0;
+        border: none;
     }
 </style>

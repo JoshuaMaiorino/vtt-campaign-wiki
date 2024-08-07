@@ -58,6 +58,8 @@
 
     const addNew = () => {
         editSession.value = { ...defaultSession }
+        editSession.value.date = getCurrentDateFormatted()
+        editSession.value.number = Math.max(...items.value.map(item => item.number)) + 1;
         editIndex.value = -1
         editDialog.value = true;
     }
@@ -149,6 +151,15 @@
         } catch (error) {
             console.error('Failed to fetch sessions:', error);
         }
+    }
+
+    function getCurrentDateFormatted () {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
     }
 
     onMounted(async () => {

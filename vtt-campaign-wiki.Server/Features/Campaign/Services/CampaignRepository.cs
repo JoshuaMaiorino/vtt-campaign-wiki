@@ -34,6 +34,9 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
                 } );
             }
 
+            entity.AddStartingSections();
+
+
             await base.AddAsync( entity );
         }
         public override async Task<IEnumerable<CampaignEntity>> GetAllAsync( Expression<Func<CampaignEntity, bool>> filter = null )

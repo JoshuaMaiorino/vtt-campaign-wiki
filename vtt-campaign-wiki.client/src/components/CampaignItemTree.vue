@@ -71,7 +71,7 @@
         content: '',
         externalLink: '',
         imageId: 0,
-        authorId: null,
+        authorId: 0,
         image: null,
         parentEntityId: null
     };
@@ -103,6 +103,9 @@
     };
 
     const save = async () => {
+        if (selectedCampaignItem.value.imageId === null) selectedCampaignItem.value.imageId = 0
+
+
         let formData = toFormData(selectedCampaignItem.value);
 
         try {
