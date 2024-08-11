@@ -194,7 +194,8 @@
 
 
              try {
-                await axios.post(`/api/campaigns/${campaign.id}/items/${itemId}/position`, req )
+                response = await axios.post(`/api/campaigns/${campaign.id}/items/${itemId}/position`, req )
+                
              } catch( error ){
                      console.error('Failed to update campaign item', error)
              }

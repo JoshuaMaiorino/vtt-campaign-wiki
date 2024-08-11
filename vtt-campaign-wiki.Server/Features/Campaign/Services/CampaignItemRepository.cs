@@ -56,7 +56,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
         {
             var root =  await base.GetAllAsync( i => i.CampaignId == campaignId );
 
-            root.OrderBy( e => (double) e.Position );
+            root = root.OrderBy( e => (double) e.Position );
 
             if( root.Any())
             {

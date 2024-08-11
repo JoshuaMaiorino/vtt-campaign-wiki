@@ -30,7 +30,7 @@
                             <v-img :src="`/api/image/${item.imageId}`"></v-img>
                         </v-avatar>
                     </template>
-                    <v-list-item-title>{{ item?.title }}</v-list-item-title>
+                    <v-list-item-title class="font-weight-bold">{{ item?.title }}</v-list-item-title>
                     <template v-if="item.content">
                         <ParsedContent v-if="item?.content" :content="item.content" :itemId="item.id" :campaignItems="campaign?.items" />
                     </template>
