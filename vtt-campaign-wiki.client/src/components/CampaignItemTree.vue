@@ -195,6 +195,10 @@
 
              try {
                 response = await axios.post(`/api/campaigns/${campaign.id}/items/${itemId}/position`, req )
+
+                updateItemById(items.value, itemId, (item) => {
+                    Object.assign(item, response.data);
+                });
                 
              } catch( error ){
                      console.error('Failed to update campaign item', error)

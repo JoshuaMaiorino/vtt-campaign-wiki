@@ -118,18 +118,11 @@ namespace vtt_campaign_wiki.Server.Features.Shared.Services
             _dbSet.Entry( existingEntity ).CurrentValues.SetValues( entity );
 
             // Additional logic for ItemBaseEntity
-            if (entity is ItemBaseEntity entityBase)
+            if (entity is ItemBaseEntity entityBase 
+                && existingEntity is ItemBaseEntity existingEntityBase 
+                && entityBase.Image != null)
             {
-                var currentPlayer = PlayerProvider.GetCurrentPlayer();
-                if (currentPlayer != null && entityBase.AuthorId != currentPlayer.Id)
-                {
-                    throw new UnauthorizedAccessException( "Only the author can update this entity." );
-                }
-
-                if (existingEntity is ItemBaseEntity existingEntityBase && entityBase.Image != null)
-                {
-                    existingEntityBase.Image = entityBase.Image;
-                }
+                existingEntityBase.Image = entityBase.Image;
             }
 
             await _context.SaveChangesAsync();

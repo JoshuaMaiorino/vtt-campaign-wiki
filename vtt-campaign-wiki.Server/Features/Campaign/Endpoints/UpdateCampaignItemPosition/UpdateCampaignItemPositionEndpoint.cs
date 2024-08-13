@@ -2,7 +2,7 @@
 
 namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaignItemPosition
 {
-    public class UpdateCampaignItemPositionEndpoint : Endpoint<UpdateCampaignItemPositionRequest>
+    public class UpdateCampaignItemPositionEndpoint : Endpoint<UpdateCampaignItemPositionRequest, CampaignItemDto>
     {
         private readonly ICampaignItemRepository _campaignItemRepository;
 
@@ -28,9 +28,9 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaignIte
                 return;
             }
 
-            await _campaignItemRepository.UpdatePositionAndParentAsync( itemId, req.ParentId, req.PriorPosition, req.NextPosition );
+            var updatedEntity = await _campaignItemRepository.UpdatePositionAndParentAsync( itemId, req.ParentId, req.PriorPosition, req.NextPosition );
 
-            await SendNoContentAsync( ct );
+            await SendOkAsync( updatedEntity.Adapt<CampaignItemDto>(), ct );
         }
     }
 }

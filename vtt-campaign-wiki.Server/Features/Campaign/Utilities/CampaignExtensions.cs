@@ -19,6 +19,18 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Utilities
             return campaigns.Where( c => c.Players.Any( p => p.PlayerId == currentPlayer.Id ) );
         }
 
+        public static bool IsDm( this CampaignEntity campaign )
+        {
+            var currentPlayer = PlayerProvider.GetCurrentPlayer();
+            return campaign.Players.Any( p => p.IsDM && p.PlayerId == currentPlayer.Id );
+        }
+
+        public static bool IsDim( this CampaignItemEntity campaignItem )
+        {
+            var currentPlayer = PlayerProvider.GetCurrentPlayer();
+            return campaignItem.Campaign.IsDm();
+        }
+
         public static CampaignEntity AddStartingSections( this CampaignEntity campaign )
         {
                     

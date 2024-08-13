@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using vtt_campaign_wiki.Server.Data;
+using vtt_campaign_wiki.Server.Features.Campaign.Utilities;
 using vtt_campaign_wiki.Server.Features.Shared;
 using vtt_campaign_wiki.Server.Features.Shared.Services;
 
@@ -16,6 +17,18 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
             if( entity.CampaignId == 0 )
             {
                 throw new ArgumentException( "CampaignId must be provided for a CampaignItemEntity." );
+            }
+
+            var campaign = await _context.Campaigns.FindAsync( entity.CampaignId );
+
+            if( campaign == null)
+            {
+                throw new ArgumentException( "Campaign Doesn't Exisit" );
+            }
+
+            if( !campaign.IsDm())
+            {
+                throw new UnauthorizedAccessException( "Only a DM can add items to a campaign" );
             }
 
             if (entity.Position == 0)
@@ -42,6 +55,10 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
 
         public async Task AddAsync( int campaignId, CampaignItemEntity entity )
         {
+            if( !entity.IsDim())
+            {
+                throw new UnauthorizedAccessException( "Only a DM can edit content" );
+            }
             entity.CampaignId = campaignId;
 
             if( entity.Campaign != null && entity.Campaign.Id != campaignId)
@@ -89,7 +106,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
             return root;
         }
 
-        public async Task UpdatePositionAndParentAsync( int itemId, int? newParentId, decimal? priorPosition, decimal? nextPosition )
+        public async Task<CampaignItemEntity> UpdatePositionAndParentAsync( int itemId, int? newParentId, decimal? priorPosition, decimal? nextPosition )
         {
             // Find the entity by itemId
             var entity = await _dbSet.FirstOrDefaultAsync( e => e.Id == itemId );
@@ -130,6 +147,8 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
                 _dbSet.Update( entity );
                 await _context.SaveChangesAsync();
             }
+
+            return entity;
         }
 
         private async Task RespreadPositionValuesAsync( int? parentId )

@@ -23,16 +23,26 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Endpoints.UpdateCampaignIte
             var campaignId = Route<int>( "campaignId" );
             var itemId = Route<int>( "itemId" );
 
-            if (itemId != req.Id || campaignId != req.CampaignId )
+            if (itemId != req.Id || campaignId != req.CampaignId)
             {
                 AddError( "Invalid Request" );
                 await SendErrorsAsync( 400, ct );
                 return;
             }
 
-            if( req.ImageId == 0)
+            if (req.ImageId == 0)
             {
                 req.ImageId = null;
+            }
+
+            if (req.ParentEntityId == 0)
+            {
+                req.ParentEntityId = null;
+            }
+
+            if( req.AuthorId == 0)
+            {
+                req.AuthorId = null;
             }
 
             var updatedItem = req.Adapt<CampaignItemEntity>();
