@@ -1,11 +1,15 @@
 <script setup>
     import LoginNavItem from "@/components/LoginNavItem.vue"
+    import SearchNavItem from "@/components/SearchNavItem.vue"
     import { useCampaignStore } from "@/stores/campaign"
     import { useRouter } from 'vue-router'
-    import { computed } from 'vue'
+    import { computed, ref } from 'vue'
 
     const campaignStore = useCampaignStore();
+
     const router = useRouter()
+
+    const searchOpen = ref(false);
 
     const navigateHome = () => {
         console.log("navigating")
@@ -42,10 +46,9 @@
                              @click="navigateHome">
                 {{ campaignStore.selectedCampaign?.title }} Campaign Wiki
             </v-toolbar-title>
-            <v-divider vertical></v-divider>
             <v-spacer></v-spacer>
 
-            <template v-if="campaignStore.selectedCampaign">
+            <template v-if="campaignStore.selectedCampaign && !searchOpen">
 
                 <v-btn text @click="navigateSessions">Sessions</v-btn>
 
@@ -56,7 +59,9 @@
                     {{ item.title }}
                 </v-btn>
             </template>
-            <v-btn class="mr-4" text to="/campaigns">Campaigns</v-btn>
+
+            <SearchNavItem v-if="campaignStore.selectedCampaign" v-model:searchOpen="searchOpen" />
+
             <v-divider vertical></v-divider>
             <LoginNavItem />
         </v-app-bar>

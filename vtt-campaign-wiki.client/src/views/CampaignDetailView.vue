@@ -36,6 +36,7 @@
                                cover
                                 :aspect-ratio="4.0/3.0" />
                         <v-card-title>Session Recaps</v-card-title>
+                        <v-card-text></v-card-text>
                     </v-card>
                 </v-col>
                 <v-col v-for="item in campaign.items"
