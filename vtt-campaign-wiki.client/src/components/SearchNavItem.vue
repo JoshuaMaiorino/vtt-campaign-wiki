@@ -5,6 +5,7 @@
                   clearable
                   autofocus
                   @input="performSearch"
+                  @blur="onBlur"
                   hide-details 
                   ref="searchField"/>
 
@@ -12,6 +13,7 @@
             v-model="menuOpen"
             :close-on-content-click="false"
             :activator="$refs.searchField"
+            :max-width="$refs.searchField ? $refs.searchField.offsetWidth : 'auto'"
             offset-y>
         <v-list class="rounded-t-0" >
             <v-list-item v-for="item in searchResults" :key="item.id" @click="goToItem(item)">
@@ -115,8 +117,17 @@
     const goToItem = (item) => {
         // Logic to navigate to the item or handle the selection
         const itemId = item.topLevelParent?.id ?? item.id
-        router.push(`/campaigns/1/${itemId}`)
+        router.push(`/campaigns/1/${itemId}#${item.id}`)
         menuOpen.value = false;
+    };
+
+    const onBlur = () => {
+        setTimeout(() => {
+            // Only close the search bar if the menu is not open
+            if (!menuOpen.value) {
+                toggleSearchBar();
+            }
+        }, 100);  // Delay to allow the click event to trigger first
     };
 </script>
 

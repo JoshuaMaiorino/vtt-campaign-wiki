@@ -1,10 +1,10 @@
 <template>
     <template v-if="!level || level == 0">
-        <TopLevelContent :item="item" />
+        <TopLevelContent :item="item" :id="`${item.id}`" />
     </template>
 
         <template v-if="level === 1">
-            <v-card flat rounded="0">
+            <v-card flat rounded="0" :id="`${item.id}`">
                 <v-img v-if="hasImage && level < 2"
                        color="surface-variant"
                        height="320"
@@ -25,7 +25,7 @@
 
         <template v-if="level > 1">
             <v-list>
-                <v-list-item>
+                <v-list-item :id="`${item.id}`">
                     <template v-slot:prepend v-if="item?.imageId">
                         <v-avatar>
                             <v-img :src="`/api/image/${item.imageId}`"></v-img>
@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-    import { computed } from 'vue'
+    import { computed, nextTick, watch, onMounted } from 'vue'
     import { useAuthStore } from '@/stores/auth.js'
     import { useCampaignStore } from '@/stores/campaign.js'
     import ItemContent from '@/components/ItemContent.vue'
@@ -73,6 +73,20 @@
     )
 
     const emit = defineEmits([ 'selected' ])
+
+    // Scroll to the item once the content is loaded
+    onMounted( async () => {
+        await nextTick()
+
+        // Get the anchor ID from the URL (if available)
+        const anchorId = window.location.hash.slice(1)
+        if (anchorId && props.item.id == anchorId) {
+            const element = document.getElementById(anchorId)
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' })
+            }
+        }
+    })
 
 </script>
 

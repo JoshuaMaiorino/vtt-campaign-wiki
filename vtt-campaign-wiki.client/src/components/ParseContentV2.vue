@@ -5,16 +5,17 @@
 </template>
 
 <script>
-import { ref, computed, defineComponent, h, resolveComponent, createApp, markRaw } from 'vue';
-import vuetify from '@/plugins/vuetify'
+    import { ref, computed, defineComponent, h, resolveComponent, createApp, markRaw, nextTick } from 'vue';
+    import vuetify from '@/plugins/vuetify'
+    import router from '@/router' 
 
 // Define your custom component
 const CustomComponent = markRaw(defineComponent({
   props: ['item'],
   template: `
-    <v-tooltip max-width="600" class="pa-0">
+    <v-tooltip  max-width="600" class="pa-0" v-model="tooltipVisible">
       <template v-slot:activator="{ props }">
-        <span class="text-primary" v-bind="props">{{ item.title }}</span>
+        <span @click="navigate" class="text-primary" v-bind="props">{{ item.title }}</span>
       </template>
       <v-card elevation="8">
       <v-toolbar color="surface-variant" density="compact" :title="item.title" class="mb-0" />
@@ -23,22 +24,43 @@ const CustomComponent = markRaw(defineComponent({
       </v-card>
     </v-tooltip>
   `,
+    data () {
+        return {
+            tooltipVisible: false,
+        }
+    },
+    methods: {
+        async navigate () {
+            this.tooltipVisible = false
+            await nextTick()
+            this.$router.push(`/campaigns/${this.item.campaignId}/${this.item.topLevelParent?.id ?? this.item.id}#${this.item.id}`) 
+        }
+    }
 }));
 
-const flattenItems = (items) => {
-    let flatList = [];
-    const recurse = (itemList) => {
-        if (itemList) {
-            itemList.forEach(item => {
-                flatList.push(item);
-                if (item.children && item.children.length) {
-                    recurse(item.children);
-                }
-            });
-        }
-    };
-    recurse(items);
-    return flatList;
+    const flattenItems = (items, topLevelParent = null) => {
+        let flatList = [];
+
+        const recurse = (itemList, parent = topLevelParent) => {
+            if (itemList) {
+                itemList.forEach(item => {
+                    // Add the current item to the list with the top-level parent reference
+                    flatList.push({
+                        ...item,
+                        topLevelParent: parent, // Attach the top-level parent
+                    });
+
+                    // Recursively process the children
+                    if (item.children && item.children.length) {
+                        const currentParent = parent || item; // Set the current item as the top-level parent if none exists
+                        recurse(item.children, currentParent);
+                    }
+                });
+            }
+        };
+
+        recurse(items);
+        return flatList;
     };
 
 const removeInlineStyles = (html) => {
@@ -107,7 +129,7 @@ export default {
                 const componentsToRender = placeHolders.map((ph, index) => ({
                     type: components.find(comp => comp.name === 'CustomComponent').component,
                     id: `component-placeholder-${ph.id}`,
-                    item: items[ph.index] // Assuming items are in the same order as phrases
+                    item: items[ ph.index ] // Assuming items are in the same order as phrases
                 }));
 
                 componentsToRender.forEach(component => {
@@ -121,6 +143,7 @@ export default {
                                 }
                             });
                             app.use(vuetify); // Ensure Vuetify is used by the app
+                            app.use(router);
                             app.mount(placeholder);
                         } catch (error) {
                             console.error(`Error mounting component: ${error.message}`, component);
