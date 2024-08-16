@@ -36,11 +36,13 @@ namespace vtt_campaign_wiki.Server.Features.Shared.Services
 
         public virtual Task AddAsync( T entity )
         {
+            SanitizeEntity( entity );
             return AddAsync( entity, null );
         }
 
         public virtual Task UpdateAsync( T entity )
         {
+            SanitizeEntity( entity );
             return UpdateAsync( entity, null );
         }
 
@@ -241,6 +243,22 @@ namespace vtt_campaign_wiki.Server.Features.Shared.Services
             }
 
             return query;
+        }
+        protected virtual void SanitizeEntity( T entity )
+        {
+            var entityType = entity.GetType();
+
+            foreach (var property in entityType.GetProperties( BindingFlags.Public | BindingFlags.Instance ))
+            {
+                if (property.PropertyType == typeof( string ))
+                {
+                    var value = property.GetValue( entity ) as string;
+                    if (!string.IsNullOrEmpty( value ) && value.Trim() == "<p><br></p>")
+                    {
+                        property.SetValue( entity, string.Empty );
+                    }
+                }
+            }
         }
 
     }

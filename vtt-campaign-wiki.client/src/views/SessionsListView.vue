@@ -48,7 +48,7 @@
         </v-row>
     </v-container>
 
-    <v-fab v-if="campaign.authorId === userId" position="static" icon="mdi-dots-horizontal" class="mb-6" location="bottom end" app appear color="primary" offset @click="sidePanel = !sidePanel"></v-fab>
+    <v-fab v-if="isDm" position="static" icon="mdi-dots-horizontal" class="mb-6" location="bottom end" app appear color="primary" offset @click="sidePanel = !sidePanel"></v-fab>
 
     <v-navigation-drawer temporary :model-value="sidePanel" location="right" width="450">
         <SessionsItemList @update="fetchSessions" />
@@ -68,6 +68,7 @@
 
     const campaignStore = useCampaignStore();
     const campaign = campaignStore.selectedCampaign;
+    const isDm = campaignStore.isDm;
 
     const authStore = useAuthStore();
     const userId = authStore.userId;

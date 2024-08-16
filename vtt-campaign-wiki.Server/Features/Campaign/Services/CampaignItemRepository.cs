@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using vtt_campaign_wiki.Server.Data;
 using vtt_campaign_wiki.Server.Features.Campaign.Utilities;
 using vtt_campaign_wiki.Server.Features.Shared;
@@ -19,7 +20,7 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
                 throw new ArgumentException( "CampaignId must be provided for a CampaignItemEntity." );
             }
 
-            var campaign = await _context.Campaigns.FindAsync( entity.CampaignId );
+            var campaign = await _context.Campaigns.Include( c => c.Players ).FirstOrDefaultAsync( c => entity.CampaignId == c.Id );
 
             if( campaign == null)
             {
@@ -67,6 +68,12 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
             }
 
             await AddAsync( entity );
+        }
+
+        public override async Task<IEnumerable<CampaignItemEntity>> GetAllAsync( Expression<Func<CampaignItemEntity, bool>> filter = null )
+        {
+            var (items, itemsLength) = await base.GetAllAsync( _dbSet.AsQueryable().Include( i => i.Children ), null, filter );
+            return items;
         }
 
         public async Task<IEnumerable<CampaignItemEntity>> GetAllAsync( int campaignId )

@@ -7,8 +7,8 @@ export function toFormData (obj, form = new FormData(), namespace = '') {
             // Handle null or undefined values explicitly
             form.append(formKey, '');
         } else if (typeof value === 'object' && !(value instanceof Date) && !(value instanceof File)) {
-            // Recursively handle nested objects, converting arrays and objects to JSON
-            toFormData(value, form, formKey);
+            // Convert objects and arrays to JSON string
+            form.append(formKey, JSON.stringify(value));
         } else {
             form.append(formKey, value);
         }

@@ -14,6 +14,7 @@ using vtt_campaign_wiki.Server.Lib;
 using System.Security.Claims;
 using vtt_campaign_wiki.Server.Features.Campaign.Services;
 using vtt_campaign_wiki.Server.Features.Campaign;
+using vtt_campaign_wiki.Server.Features.AI.Services;
 
 var builder = WebApplication.CreateBuilder( args );
 
@@ -63,6 +64,9 @@ builder.Services.AddScoped( typeof( IRepositoryBase<> ), typeof( RepositoryBase<
 builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 builder.Services.AddScoped<ICampaignRepository, CampaignRepository>();
 builder.Services.AddScoped<ICampaignItemRepository, CampaignItemRepository>();
+
+builder.Services.AddHttpClient();
+builder.Services.AddTransient<ISuggestedItemsService, SuggestedItemsService>();
 
 builder.Services.AddControllers( options =>
 {

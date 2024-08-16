@@ -1,13 +1,15 @@
 <template>
     <v-toolbar :title="currentItem?.title">
-        <v-btn icon="mdi-plus" @click="addNew()"></v-btn>
-        <v-btn icon="mdi-pencil" @click="$emit('edit')" />
+        <v-btn icon="mdi-plus" title="Add New Item" @click="addNew()" />
+        <v-btn icon="mdi-pencil" title="Edit Item" @click="$emit('edit')" />
     </v-toolbar>
     <v-list class="ml-2">
+        <v-list-subheader>Campaign Items</v-list-subheader>
         <Draggable ref="tree" class="mtl-tree" v-model="items" treeLine :defaultOpen="false" triggerClass="mdi-reorder-horizontal" @change="update">
             <template v-slot:default="{ node, stat }">
                 <OpenIcon v-if="stat.children.length"
                           :open="stat.open"
+                          group="items"
                           class="mtl-mr"
                           @click.native="stat.open = !stat.open" />
                 <v-list-item :title="node.title" class="flex-grow-1">
@@ -23,9 +25,33 @@
             </template>
         </Draggable>
     </v-list>
+    <v-list>
+        <v-list-subheader>Suggested Items</v-list-subheader>
+        <Draggable ref="suggestedTree"
+                   class="mtl-tree"
+                   v-model="suggestedItems"
+                   group="items"
+                   :defaultOpen="false"
+                   triggerClass="mdi-reorder-horizontal">
+            <template v-slot:default="{ node, stat }">
+                <v-list-item :title="node.title" class="flex-grow-1">
+                    <template v-slot:prepend>
+                        <v-icon>mdi-reorder-horizontal</v-icon>
+                    </template>
+                    <template v-slot:append>
+                        <v-btn size="small" variant="plain" icon="mdi-import" @click="editItem(stat)" />
+                    </template>
+                </v-list-item>
+            </template>
+        </Draggable>
+        <v-list-item v-if="!suggestedItems.length" title="Get Suggestions" @click="getSuggestions" :disabled="loadingSuggestions">
+            <template v-slot:prepend>
+                <v-btn icon="mdi-creation-outline" variant="plain" :loading="loadingSuggestions" />
+            </template>
+        </v-list-item>
+    </v-list>
 
     <ItemEdit :title="formTitle" v-model="editDialog" v-model:item="selectedCampaignItem" @save="save" @close="close" @delete="deleteItem" />
-
 </template>
 <script setup>
     import { ref, computed, nextTick } from 'vue'
@@ -45,6 +71,14 @@
     const currentItem = defineModel('currentItem')
     const emit = defineEmits(['edit']);
 
+    const suggestedItems = ref([]);
+    const loadingSuggestions = ref(false);
+
+    const authStore = useAuthStore();
+    const campaignStore = useCampaignStore();
+
+    const campaign = campaignStore.selectedCampaign;
+
     const props = defineProps( {
         isCampaign: {
             type: Boolean,
@@ -52,10 +86,20 @@
         }
     })
 
-    const authStore = useAuthStore();
-    const campaignStore = useCampaignStore();
+    const getSuggestions = async () => {
 
-    const campaign = campaignStore.selectedCampaign;
+        loadingSuggestions.value = true;
+
+        try {
+            const response = await axios.get(`/api/suggestion/${campaign.id}`);
+            suggestedItems.value = response.data;
+        } catch (error) {
+            console.error('Failed to fetch suggestions:', error);
+        } finally {
+            loadingSuggestions.value = false;
+        }
+
+    }
 
     const dragStart = (stat) => {
 
@@ -92,11 +136,12 @@
         } else {{
             selectedCampaignItem.value.parentEntityId = props.isCampaign ? 0 : currentItem.value.id
         }}
-        
+    
         editDialog.value = true;
     };
 
     const editItem = (stat) => {
+        console.log( stat )
         selectedStat.value = stat
         selectedCampaignItem.value = { ...stat.data };
         editDialog.value = true;
@@ -109,13 +154,13 @@
         let formData = toFormData(selectedCampaignItem.value);
 
         try {
-            if (selectedCampaignItem.value.id !== -1) {
+            if (selectedCampaignItem.value.id > 0) {
                 const response = await axios.put(`/api/campaigns/${campaign.id}/items/${selectedCampaignItem.value.id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
-                
+            
                 updateItemById(items.value, selectedCampaignItem.value.id, (item) => {
                     Object.assign(item, response.data);
                 });
@@ -130,7 +175,7 @@
                 console.log("SelectedStat", selectedStat, "SelectedItem", selectedCampaignItem.value)
 
                 // Add new item to the local items array
-                if (selectedStat) {
+                if ( selectedStat && selectedCampaignItem.value.parentEntityId ) {
                     addItem(items.value, selectedCampaignItem.value.parentEntityId, (item) => {
                         item.children.push(response.data);
                     })
@@ -170,40 +215,32 @@
     };
 
     const update = async () => {
-        
+        const { dragNode, parent, indexBeforeDrop } = dragContext.targetInfo;
 
-        console.log( dragContext.targetInfo.dragNode)
-        
-        const itemId = dragContext.targetInfo.dragNode.data.id
-        const newParentId = dragContext.targetInfo.parent?.data?.id
-        const newIndex = dragContext.targetInfo.indexBeforeDrop
-        const currentParentId = dragContext.targetInfo.dragNode.data.parentEntityId
-        const currentIndex = dragContext.startInfo.indexBeforeDrop
-        const siblings = dragContext.targetInfo.siblings
+        const itemId = dragNode.data.id;
+        const newParentId = parent?.data?.id;
+        const newIndex = indexBeforeDrop;
+        const currentParentId = dragNode.data.parentEntityId;
+        const currentIndex = dragContext.startInfo.indexBeforeDrop;
+        const siblings = dragContext.targetInfo.siblings;
 
-        if( newParentId !== currentParentId || newIndex !== currentIndex ){
-
+        if (newParentId !== currentParentId || newIndex !== currentIndex) {
             const req =  {
                 itemId,
                 campaignId: campaign.id,
                 parentId: newParentId || null,
                 priorPosition: siblings[newIndex - 1]?.data?.position || null,
                 nextPosition: siblings[newIndex + 1]?.data?.position || null
-            }
+            };
 
-
-
-             try {
-                response = await axios.post(`/api/campaigns/${campaign.id}/items/${itemId}/position`, req )
-
+            try {
+                const response = await axios.post(`/api/campaigns/${campaign.id}/items/${itemId}/position`, req);
                 updateItemById(items.value, itemId, (item) => {
                     Object.assign(item, response.data);
                 });
-                
-             } catch( error ){
-                     console.error('Failed to update campaign item', error)
-             }
-
+            } catch (error) {
+                console.error('Failed to update campaign item', error);
+            }
         }
     }
 
@@ -236,5 +273,4 @@
         }
         return false;
     }
-
 </script>

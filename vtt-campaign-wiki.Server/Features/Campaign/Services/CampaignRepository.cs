@@ -59,13 +59,13 @@ namespace vtt_campaign_wiki.Server.Features.Campaign.Services
         }
         public override async Task UpdateAsync( CampaignEntity entity )
         {
-            if( !entity.IsDm())
-            {
-                throw new UnauthorizedAccessException( "Only a DM can edit the campaign" );
-            }
-
             await base.UpdateAsync( entity, existingEntity =>
             {
+                if (!existingEntity.IsDm())
+                {
+                    throw new UnauthorizedAccessException( "Only a DM can edit the campaign" );
+                }
+
                 if (entity.Players != null)
                 {
                     foreach (var campaignPlayer in entity.Players)

@@ -9,6 +9,7 @@
                        color="surface-variant"
                        height="320"
                        :src="`/api/image/${item.imageId}`"
+                       style="object-position:top center"
                        cover />
                 <v-toolbar :density="level >= 2 ? 'compact' : 'default'" color="transparent" :title="item?.title">
                 </v-toolbar>

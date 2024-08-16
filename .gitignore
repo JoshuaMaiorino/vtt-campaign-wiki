@@ -365,3 +365,5 @@ FodyWeavers.xsd
 /vtt-campaign-wiki.Server/Data/VttCampaignWiki-Old.db
 /vtt-campaign-wiki.Server/Data/VttCampaignWiki-Old.db-shm
 /vtt-campaign-wiki.Server/Data/VttCampaignWiki-Old.db-wal
+/vtt-campaign-wiki.Server/appsettings.Development.json
+/vtt-campaign-wiki.Server/appsettings.Production.json
