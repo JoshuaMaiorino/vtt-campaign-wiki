@@ -116,6 +116,7 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<VttCampaignWikiDbContext>();
         context.Database.Migrate(); // Ensure the database is created and migrated
         await DbInitializer.SeedUsersAsync( services ); // Seed the initial user
+        await MalachiCampaignSeeder.SeedAsync( services ); // Seed the Crownless Halo campaign
     }
     catch (Exception ex)
     {
